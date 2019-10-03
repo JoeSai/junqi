@@ -24,10 +24,18 @@ const   PLAYER_COLOR_RED = "RED",
             { name: "地雷", id: 10, amount: 3}, 
             { name: "军旗", id: 11, amount: 1}, 
         ],
- PieceState = {
-    Show: 1,
-    Hide: 0,
-}
+        PieceState = {
+            Show: 1,
+            Hide: 0,
+        },
+
+        Board = {
+            Width: 5,
+            Height: 13,
+        }
+        
+
+//-注意上面格式，极其容易出错--//
 
 var gameModel = null;
 
@@ -41,11 +49,16 @@ class GameModel {
         }
         return gameModel;
     }
+    static get Board() {  //当 GameModel.Board.Width;时 返回 上面定义的Board
+        return Board;
+    }
+    static get PieceState() {
+        return PieceState;
+    }
 
-    //构造函数
+//构造函数
     constructor() {
 
-        
         this.OneGrid = (function() {
             function OneGrid(nShowHide, strPieceColor, nPieceId) {
                 this.nShowHide = nShowHide;
@@ -90,10 +103,10 @@ class GameModel {
         this.lstCurrentBoard = this.shuffle(this.lstCurrentBoard);  //洗牌方法
         console.log("GameModel, this.lstCurrentBoard =", this.lstCurrentBoard);  
     }
-    /*
-    * Math.random()  [0，1)
-    * Math.floor   向下取整
-    */
+/*
+* Math.random()  [0，1)
+* Math.floor   向下取整
+*/
     shuffle(array) {   //洗牌 打乱
         var currentIndex = array.length,
             temporaryValue, randomIndex;
@@ -120,6 +133,27 @@ class GameModel {
     getCurrentBoard() {
         return this.lstCurrentBoard;
     }
+
+    gridIndexToGridXY(nGridIndex) {
+        var trueBoard = [
+            { y: 0, x: 0 },   { y: 0, x: 1 },   { y: 0, x: 2 },   { y: 0, x: 3 },   { y: 0, x: 4 },
+            { y: 1, x: 0 },   { y: 1, x: 1 },   { y: 1, x: 2 },   { y: 1, x: 3 },   { y: 1, x: 4 },
+            { y: 2, x: 0 },                     { y: 2, x: 2 },                     { y: 2, x: 4 },
+            { y: 3, x: 0 },   { y: 3, x: 1 },                     { y: 3, x: 3 },   { y: 3, x: 4 },
+            { y: 4, x: 0 },                     { y: 4, x: 2 },                     { y: 4, x: 4 },
+            { y: 5, x: 0 },   { y: 5, x: 1 },   { y: 5, x: 2 },   { y: 5, x: 3 },   { y: 5, x: 4 },
+            { y: 7, x: 0 },   { y: 7, x: 1 },   { y: 7, x: 2 },   { y: 7, x: 3 },   { y: 7, x: 4 },
+            { y: 8, x: 0 },                     { y: 8, x: 2 },                     { y: 8, x: 4 },
+            { y: 9, x: 0 },   { y: 9, x: 1 },                     { y: 9, x: 3 },   { y: 9, x: 4 },
+            { y: 10, x: 0 },                     { y: 10, x: 2 },                     { y: 10, x: 4 },
+            { y: 11, x: 0 },   { y: 11, x: 1 },   { y: 11, x: 2 },   { y: 11, x: 3 },   { y: 11, x: 4 },
+            { y: 12, x: 0 },   { y: 12, x: 1 },   { y: 12, x: 2 },   { y: 12, x: 3 },   { y: 12, x: 4 },
+        ]
+
+        return trueBoard[nGridIndex];
+        // return { x: 0, y: 0 };
+    }
+
 }
 
 export default GameModel;

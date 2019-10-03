@@ -4,13 +4,18 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        te: cc.spriteFrame
+        // te: cc.spriteFrame
+        piecesAtlas: cc.SpriteAtlas,
     },
 
 
     onLoad () {
-        var that = this;
-       
+        
+
+        //每一个棋子 所占 地图格子的 长和宽
+        this.nOneGridWidth = this.node.getContentSize().width / GameModel.Board.Width;
+        this.nOneGridHeight = this.node.getContentSize().height / GameModel.Board.Height;
+        this.SPRITEFRAME_HIDE = "Hide";
     },
 
     start () {
@@ -24,6 +29,17 @@ cc.Class({
     },
 
     init(){
+        // var that=this;
+        // cc.loader.loadRes('img/cocos', cc.SpriteFrame, function (err, spriteFrame) {
+        //     if (err) {
+        //         cc.error(err.message || err);
+        //         return;
+        //     }
+        //     console.log("1",spriteFrame)
+        //     that.te1  = spriteFrame;
+        //     that.a="ok";
+
+        // });
         //清除之前的棋子节点
         for (var i = 0; i < this.lstCurrentBoardNodes.length; i++) {
             if (this.lstCurrentBoardNodes[i] !== null) {
@@ -44,7 +60,6 @@ cc.Class({
         var lstCurrentBoard = GameModel.gameModel.getCurrentBoard();
 
        
-        console.log(this.tea)
 
         for (var i = 0; i < lstCurrentBoard.length; i++) { 
 
@@ -54,22 +69,73 @@ cc.Class({
             //添加精灵渲染组件
             var sp = node.addComponent(cc.Sprite);
 
-            cc.loader.loadRes('img/cocos', cc.SpriteFrame, function (err, spriteFrame) {
-                if (err) {
-                    cc.error(err.message || err);
-                    return;
-                }
-                console.log("spriteFrame",spriteFrame)
-                sp.spriteFrame  = spriteFrame;
+            // cc.loader.loadRes('img/cocos', cc.SpriteFrame, function (err, spriteFrame) {
+            //     if (err) {
+            //         cc.error(err.message || err);
+            //         return;
+            //     }
+            //     console.log("spriteFrame",spriteFrame)
+            //     sp.spriteFrame  = spriteFrame;
     
-            });
-            
+            // });
+            // if(this.a == "ok")
+            // {
+            // sp.spriteFrame = this.te1;
+            // console.log("1111111")
+            // }
+            // else{
+            //     console.log("22222222")
+            // }
+            sp.spriteFrame = this.getSpriteFrameOfOneGrid(oneGrid);
             node.setScale(1.5);
             node.parent = this.node;
-            node.setPosition(0, 0);  
-            console.log("add")
-        }
-    }
 
+            var gridXY = GameModel.gameModel.gridIndexToGridXY(i);         //     return { x: nX, y: nY };
+            console.log("gridXY =", gridXY);
+
+            var fPieceCenterX = gridXY.x * this.nOneGridWidth + this.nOneGridWidth / 2 - this.node.getContentSize().width / 2;
+            var fPieceCenterY = gridXY.y * this.nOneGridHeight + this.nOneGridHeight / 2 - this.node.getContentSize().height / 2;
+            console.log("fPieceCenterX =", fPieceCenterX);
+            node.setPosition(fPieceCenterX, fPieceCenterY);               //设置每个棋子position
+            console.log("add")
+
+            this.lstCurrentBoardNodes.push(node);
+        }
+    },
+    getSpriteFrameOfOneGrid(oneGrid) {
+        // console.log("getSpriteFrameOfOneGrid(), GameModel.PieceState =", GameModel.PieceState);
+
+        if (oneGrid === null) {
+            return null;
+        } else if (oneGrid.nShowHide === GameModel.PieceState.Hide) {
+            return this.piecesAtlas.getSpriteFrame(this.SPRITEFRAME_HIDE);          //棋子背面
+        } else {
+            // console.log("------------------"+oneGrid.strPieceColor +"-----------------"+ oneGrid.nPieceId)
+            return this.piecesAtlas.getSpriteFrame(oneGrid.strPieceColor + oneGrid.nPieceId);           //颜色 + 棋子ID
+        }
+    },
+    enablePlay(player) {
+        // console.log("Board.enablePlay()");
+        this.currentPlayer = player;
+        this.node.on(cc.Node.EventType.TOUCH_START, this.playerTouchStart, this);       //开启监听
+    },
+    playerTouchStart(event) {
+        // console.log("Board.playerTouchStart()");
+        // this.node.off(cc.Node.EventType.TOUCH_START, this.playerTouchStart, this);
+        this.touchLoc = event.getLocation();
+        // console.log("touchLoc1 =", this.touchLoc);
+
+        this.touchLoc = this.node.convertToNodeSpaceAR(this.touchLoc);  //将一个点转换到节点 (局部) 空间坐标系，这个坐标系以锚点为原点。
+        console.log("touchLoc2 =", this.touchLoc);
+
+
+        /*   convertToNodeSpaceAR转换后  以board中心点为 （0，0）
+        *  
+        *             -----  
+        *       <---   (0，0)   --->     
+        *             ------  
+        * 
+        */
+    },
     // update (dt) {},
 });
