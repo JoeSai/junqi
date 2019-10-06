@@ -32,7 +32,9 @@ const   PLAYER_COLOR_RED = "RED",
         Board = {
             Width: 5,
             Height: 13,
-        }
+        },
+
+        Filed = [11,13,17,21,23,36,38,42,46,48]   //大本营位置
         
 
 //-注意上面格式，极其容易出错--//
@@ -55,6 +57,9 @@ class GameModel {
     static get PieceState() {
         return PieceState;
     }
+    static get Filed() {
+        return Filed;
+    }
 
 //构造函数
     constructor() {
@@ -73,6 +78,40 @@ class GameModel {
             return OneGrid;
         })();
 
+
+         //翻转棋子时：
+        //oneMove = new GameModel.gameModel.OneMove(nClickPieceIndex, null);
+        
+        this.OneMove = (function() {
+            function OneMove(nFromIndex, nToIndex) {
+                this.nFromIndex = nFromIndex;
+                this.nToIndex = nToIndex;
+            }
+        //prototype 属性使您有能力向对象添加属性和方法。  https://www.w3school.com.cn/jsref/jsref_prototype_array.asp
+            OneMove.prototype.clone = function() {
+                return new OneMove(this.nFromIndex, this.nToIndex);
+            };
+
+            OneMove.prototype.toString = function() {
+                // console.log("执行clone--------")
+                // console.log("this.nFromIndex =", this.nFromIndex, ", that.lstCurrentBoard[this.nFromIndex] =", that.lstCurrentBoard[this.nFromIndex]);
+                var strPieceColor = that.lstCurrentBoard[this.nFromIndex].strPieceColor;  //strPieceColor 选中棋子的颜色
+                // console.log("strPieceColor:"+strPieceColor)
+                if (that.lstCurrentBoard[this.nFromIndex].nPieceId === GameModel.UNKNOWN_PIECE_INDEX) {
+                    var strPiece = "UNKNOWN_PIECE";
+                } else {
+                    var strPiece = GameModel.Pieces[that.lstCurrentBoard[this.nFromIndex].nPieceId].name;
+                }
+
+                var fromGridXY = that.gridIndexToGridXY(this.nFromIndex);
+                var toGridXY = that.gridIndexToGridXY(this.nToIndex);
+
+                var strOneMove = strPieceColor + " " + strPiece + " [" + fromGridXY.x + "," + fromGridXY.y + "] -> [" + toGridXY.x + "," + toGridXY.y + "]";
+                return strOneMove;
+            };
+            // console.log("执行测试")
+            return OneMove;
+        })();
     }
 
     init() {
@@ -101,7 +140,25 @@ class GameModel {
         // 在打印 某些 较长对象的时候 ，可能 会先执行下一行  。-------> 解决方法 使用 JSON.stringify()方法转换格式 打印。
         // console.log("GameModel, this.lstCurrentBoard =", JSON.stringify(this.lstCurrentBoard));
         this.lstCurrentBoard = this.shuffle(this.lstCurrentBoard);  //洗牌方法
-        console.log("GameModel, this.lstCurrentBoard =", this.lstCurrentBoard);  
+
+
+        //在棋盘 行营位置 加入 空棋子 id -1
+        var nullGrid = new this.OneGrid(null,null,-1);
+        // console.log("nullGrid = :",nullGrid);
+        for(var i = 0; i < Filed.length; i++)
+        {
+            var filed = Filed[i];
+            this.lstCurrentBoard.splice(filed, 0, nullGrid);
+        }
+
+        //在棋盘 "前线 && 山界"位置 加入 空棋子 id -2
+        var nullGrid = new this.OneGrid(null,null,-2);
+        for(var i = 0; i < 5; i++)
+        {
+            this.lstCurrentBoard.splice(30, 0, nullGrid);
+        }
+        // console.log("GameModel, this.lstCurrentBoard =", this.lstCurrentBoard);  
+      
     }
 /*
 * Math.random()  [0，1)
@@ -138,14 +195,17 @@ class GameModel {
         var trueBoard = [
             { y: 0, x: 0 },   { y: 0, x: 1 },   { y: 0, x: 2 },   { y: 0, x: 3 },   { y: 0, x: 4 },
             { y: 1, x: 0 },   { y: 1, x: 1 },   { y: 1, x: 2 },   { y: 1, x: 3 },   { y: 1, x: 4 },
-            { y: 2, x: 0 },                     { y: 2, x: 2 },                     { y: 2, x: 4 },
-            { y: 3, x: 0 },   { y: 3, x: 1 },                     { y: 3, x: 3 },   { y: 3, x: 4 },
-            { y: 4, x: 0 },                     { y: 4, x: 2 },                     { y: 4, x: 4 },
+            { y: 2, x: 0 },   { y: 2, x: 1 },   { y: 2, x: 2 },   { y: 2, x: 3 },   { y: 2, x: 4 },
+            { y: 3, x: 0 },   { y: 3, x: 1 },   { y: 3, x: 2 },   { y: 3, x: 3 },   { y: 3, x: 4 },
+            { y: 4, x: 0 },   { y: 4, x: 1 },   { y: 4, x: 2 },   { y: 3, x: 3 },   { y: 4, x: 4 },
             { y: 5, x: 0 },   { y: 5, x: 1 },   { y: 5, x: 2 },   { y: 5, x: 3 },   { y: 5, x: 4 },
+
+            { y: 6, x: 0 },   { y: 6, x: 1 },   { y: 6, x: 2 },   { y: 6, x: 3 },   { y: 6, x: 4 },
+
             { y: 7, x: 0 },   { y: 7, x: 1 },   { y: 7, x: 2 },   { y: 7, x: 3 },   { y: 7, x: 4 },
-            { y: 8, x: 0 },                     { y: 8, x: 2 },                     { y: 8, x: 4 },
-            { y: 9, x: 0 },   { y: 9, x: 1 },                     { y: 9, x: 3 },   { y: 9, x: 4 },
-            { y: 10, x: 0 },                     { y: 10, x: 2 },                     { y: 10, x: 4 },
+            { y: 8, x: 0 },   { y: 8, x: 1 },   { y: 8, x: 2 },   { y: 8, x: 3 },   { y: 8, x: 4 },
+            { y: 9, x: 0 },   { y: 9, x: 1 },   { y: 9, x: 2 },   { y: 9, x: 3 },   { y: 9, x: 4 },
+            { y: 10, x: 0 },   { y: 10, x: 1 },   { y: 10, x: 2 },   { y: 10, x: 3 },   { y: 10, x: 4 },
             { y: 11, x: 0 },   { y: 11, x: 1 },   { y: 11, x: 2 },   { y: 11, x: 3 },   { y: 11, x: 4 },
             { y: 12, x: 0 },   { y: 12, x: 1 },   { y: 12, x: 2 },   { y: 12, x: 3 },   { y: 12, x: 4 },
         ]
@@ -154,6 +214,11 @@ class GameModel {
         // return { x: 0, y: 0 };
     }
 
+    //根据 棋子index 返回棋子
+    getOneGrid(nClickPieceIndex) {  
+        // console.log("getOneGrid(), this.lstCurrentBoard =", this.lstCurrentBoard);  
+        return this.lstCurrentBoard[nClickPieceIndex];
+    }
 }
 
 export default GameModel;

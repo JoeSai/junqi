@@ -1,3 +1,4 @@
+import GameModel from "./GameModel";
 // Learn cc.Class:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/class.html
 //  - [English] http://docs.cocos2d-x.org/creator/manual/en/scripting/class.html
@@ -32,8 +33,18 @@ cc.Class({
         // console.log("PlayerHuman(", this.nColorId, ") beginMove()");
         // console.log("board3 =", this.board);
         this.bMove = true;
-        this.nSelectedPieceIndex = null;
+        this.nSelectedPieceIndex = null;  //选择的棋子
         this.board.enablePlay(this);
     },
+
+    move(nClickPieceIndex){
+
+        if(this.nSelectedPieceIndex === null)
+        {
+            var selectedGrid = GameModel.gameModel.getOneGrid(nClickPieceIndex);  //获取选中的棋子
+
+            console.log("selectedGrid = :",selectedGrid);  //TODO:
+        }
+    }
     // update (dt) {},
 });

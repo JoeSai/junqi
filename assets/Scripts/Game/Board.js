@@ -21,7 +21,7 @@ cc.Class({
     start () {
         this.lstCurrentBoardInfo = [];
 
-        //当前棋子 与 已击吃棋子
+        //当前棋子 与 已吃棋子
         this.lstCurrentBoardNodes = [];
         this.lstKilledNode = [];
 
@@ -91,13 +91,13 @@ cc.Class({
             node.parent = this.node;
 
             var gridXY = GameModel.gameModel.gridIndexToGridXY(i);         //     return { x: nX, y: nY };
-            console.log("gridXY =", gridXY);
+            // console.log("gridXY =", gridXY);
 
             var fPieceCenterX = gridXY.x * this.nOneGridWidth + this.nOneGridWidth / 2 - this.node.getContentSize().width / 2;
             var fPieceCenterY = gridXY.y * this.nOneGridHeight + this.nOneGridHeight / 2 - this.node.getContentSize().height / 2;
-            console.log("fPieceCenterX =", fPieceCenterX);
+            // console.log("fPieceCenterX =", fPieceCenterX);
             node.setPosition(fPieceCenterX, fPieceCenterY);               //设置每个棋子position
-            console.log("add")
+            // console.log("add")
 
             this.lstCurrentBoardNodes.push(node);
         }
@@ -136,6 +136,39 @@ cc.Class({
         *             ------  
         * 
         */
+        var nClickPieceIndex = this.pointToPieceIndex(this.touchLoc);
+        
+        if (this.currentPlayer !== null) {
+            this.currentPlayer.move(nClickPieceIndex);       //TODO:玩家move 动作
+        }
     },
+
+    pointToPieceIndex(point){
+        var clickV2 = cc.v2();
+
+        // Node.getContentSize
+        // 获取节点自身大小，不受该节点是否被缩放或者旋转的影响。
+        // 坐标右移，统一为正数
+        clickV2.x = point.x + this.node.getContentSize().width / 2;
+        clickV2.y = point.y + this.node.getContentSize().height /2;
+
+        var ix = Math.floor(clickV2.x / (this.node.getContentSize().width / GameModel.Board.Width));
+        var iy = Math.floor(clickV2.y / (this.node.getContentSize().height / GameModel.Board.Height));
+
+        // console.log("Board, ix =", ix, ", iy =", iy);
+
+        // 期望 ix 为 0 1 2 3 4 
+        // 会出现 Board, ix = 5 , iy = 1 ,可能为cocos bug
+        if(ix >= GameModel.Board.Width){
+            ix = GameModel.Board.Width - 1;
+        }
+        if(iy >= GameModel.Board.Height){
+            iy = GameModel.Board.Height - 1;
+        }
+        var index = ix + iy * GameModel.Board.Width;
+        console.log("Board, ix =", ix, ", iy =", iy, ", index =", index);
+        return index;
+
+    }
     // update (dt) {},
 });
