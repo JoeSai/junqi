@@ -34,6 +34,13 @@ const   PLAYER_COLOR_RED = "RED",
             Height: 13,
         },
 
+        MOVING_TYPE = {
+            SHOW: 1,
+            MOVE: 2,
+            KILL: 3,
+        },
+        NULL_PIECE = -1,  //无棋子
+
         Filed = [11,13,17,21,23,36,38,42,46,48]   //大本营位置
         
 
@@ -60,9 +67,19 @@ class GameModel {
     static get Filed() {
         return Filed;
     }
+    static get Pieces() {
+        return Pieces;
+    }
+    static get MOVING_TYPE() {
+        return MOVING_TYPE;
+    }
+    static get NULL_PIECE() {
+        return NULL_PIECE;
+    }
 
 //构造函数
     constructor() {
+        let that = this;
 
         this.OneGrid = (function() {
             function OneGrid(nShowHide, strPieceColor, nPieceId) {
@@ -88,17 +105,17 @@ class GameModel {
                 this.nToIndex = nToIndex;
             }
         //prototype 属性使您有能力向对象添加属性和方法。  https://www.w3school.com.cn/jsref/jsref_prototype_array.asp
-            OneMove.prototype.clone = function() {
-                return new OneMove(this.nFromIndex, this.nToIndex);
-            };
+            // OneMove.prototype.clone = function() {
+            //     return new OneMove(this.nFromIndex, this.nToIndex);
+            // };
 
             OneMove.prototype.toString = function() {
                 // console.log("执行clone--------")
                 // console.log("this.nFromIndex =", this.nFromIndex, ", that.lstCurrentBoard[this.nFromIndex] =", that.lstCurrentBoard[this.nFromIndex]);
                 var strPieceColor = that.lstCurrentBoard[this.nFromIndex].strPieceColor;  //strPieceColor 选中棋子的颜色
                 // console.log("strPieceColor:"+strPieceColor)
-                if (that.lstCurrentBoard[this.nFromIndex].nPieceId === GameModel.UNKNOWN_PIECE_INDEX) {
-                    var strPiece = "UNKNOWN_PIECE";
+                if (that.lstCurrentBoard[this.nFromIndex].nPieceId === GameModel.NULL_PIECE) {
+                    var strPiece = "NULL_PIECE";
                 } else {
                     var strPiece = GameModel.Pieces[that.lstCurrentBoard[this.nFromIndex].nPieceId].name;
                 }
@@ -111,6 +128,26 @@ class GameModel {
             };
             // console.log("执行测试")
             return OneMove;
+        })();
+
+        this.MoveResult = (function() {
+            function MoveResult() {
+                this.nMovingType = 0;
+                this.fromOneGridWithPosition = null;
+                this.toOneGridWithPosition = null;
+            }
+
+            return MoveResult;
+        })();
+
+
+        this.OneGridWithPosition = (function() {
+            function OneGridWithPosition(nPositionIndex, oneGrid) {
+                this.nPositionIndex = nPositionIndex;
+                this.oneGrid = oneGrid;
+            }
+
+            return OneGridWithPosition;
         })();
     }
 
@@ -209,9 +246,13 @@ class GameModel {
             { y: 11, x: 0 },   { y: 11, x: 1 },   { y: 11, x: 2 },   { y: 11, x: 3 },   { y: 11, x: 4 },
             { y: 12, x: 0 },   { y: 12, x: 1 },   { y: 12, x: 2 },   { y: 12, x: 3 },   { y: 12, x: 4 },
         ]
-
-        return trueBoard[nGridIndex];
-        // return { x: 0, y: 0 };
+        if(nGridIndex != null)
+        {
+            return trueBoard[nGridIndex];
+        }
+        else //nGridIndex === null
+            // return trueBoard[0];
+            return { x: null, y: null };
     }
 
     //根据 棋子index 返回棋子
@@ -219,6 +260,65 @@ class GameModel {
         // console.log("getOneGrid(), this.lstCurrentBoard =", this.lstCurrentBoard);  
         return this.lstCurrentBoard[nClickPieceIndex];
     }
+
+
+    //检验走子是否符合规则
+    verifyMove(oneMove) {
+
+        var fromOneGrid = this.getOneGrid(oneMove.nFromIndex);
+        // console.log("verifyMove(), fromOneGrid =", fromOneGrid);
+
+        // 拿起暗子
+        if (fromOneGrid.nShowHide === PieceState.Hide) {
+            return true;
+        }
+    }
+
+    playerMove(oneMove){
+        var moveResult = new this.MoveResult();
+
+        // 选择要走的棋子
+        var selectedGrid = this.lstCurrentBoard[oneMove.nFromIndex];
+        console.log("selectedGrid",selectedGrid);
+
+        // 返回棋子的变化
+        var fromOneGird = selectedGrid.clone();
+        moveResult.fromOneGridWithPosition = new this.OneGridWithPosition(oneMove.nFromIndex, fromOneGird);
+       
+
+
+        // 暗棋
+        if (selectedGrid.nShowHide === PieceState.Hide) {
+            // 翻明
+            if (oneMove.nToIndex === null) {
+                selectedGrid.nShowHide = PieceState.Show;
+                
+                // 返回棋子的变化
+                moveResult.nMovingType = MOVING_TYPE.SHOW;
+                moveResult.toOneGridWithPosition = new this.OneGridWithPosition(oneMove.nFromIndex, null);
+                // console.log("GameModel.playerMove(), moveResult2 =", moveResult);
+            }
+          
+        }
+
+        console.log("GameModel.playerMove(), moveResult1 =", moveResult);
+        return moveResult;
+    }
+
+    //丢硬币决定先后
+    flipCoin() {
+        return Math.round(Math.random());   //Math.random [0,1)  , Math.round 四舍五入
+    }
+
+    getOpponentColor(strPieceColor) {  //返回对手的颜色
+        if (strPieceColor === PLAYER_COLOR_BLACK) {
+            return PLAYER_COLOR_RED;
+        } else if (strPieceColor === PLAYER_COLOR_RED) {
+            return PLAYER_COLOR_BLACK;
+        } else {
+            return null;
+        }
+    } 
 }
 
 export default GameModel;

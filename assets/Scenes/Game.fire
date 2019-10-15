@@ -21,6 +21,9 @@
       },
       {
         "__id__": 16
+      },
+      {
+        "__id__": 18
       }
     ],
     "_active": true,
@@ -47,8 +50,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.23549029080978592,
-      "y": 0.23549029080978592,
+      "x": 0.2863568215892054,
+      "y": 0.2863568215892054,
       "z": 1
     },
     "_quat": {
@@ -526,7 +529,7 @@
     },
     "_enabled": true,
     "piecesAtlas": {
-      "__uuid__": "a1c30375-7f7f-4c15-a01a-ae5c99ed02b7"
+      "__uuid__": "a6702e97-6e3d-49a8-8026-f3d63fae39a5"
     },
     "_id": "92hm0ERnZJDqzpuaTI1RGr"
   },
@@ -645,6 +648,9 @@
     "playerHuman": {
       "__id__": 16
     },
+    "playerHuman2": {
+      "__id__": 18
+    },
     "boardNode": {
       "__id__": 10
     },
@@ -725,5 +731,81 @@
       "__id__": 14
     },
     "_id": "04tELKK3pOgZMqObsVNE2D"
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "PlayerHuman2",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 1
+    },
+    "_children": [],
+    "_active": true,
+    "_level": 1,
+    "_components": [
+      {
+        "__id__": 19
+      }
+    ],
+    "_prefab": null,
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 0,
+      "height": 0
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_position": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_scale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_rotationX": 0,
+    "_rotationY": 0,
+    "_quat": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "groupIndex": 0,
+    "_id": "55gP8IljNArp3tVjsA8rXT"
+  },
+  {
+    "__type__": "fbe1dGGX6JP+JPTvD+AiS4l",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 18
+    },
+    "_enabled": true,
+    "boardNode": {
+      "__id__": 10
+    },
+    "gameController": {
+      "__id__": 14
+    },
+    "_id": "80gsyvZp1MzYqITWyTDAhm"
   }
 ]

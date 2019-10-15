@@ -119,6 +119,12 @@ cc.Class({
         this.currentPlayer = player;
         this.node.on(cc.Node.EventType.TOUCH_START, this.playerTouchStart, this);       //开启监听
     },
+    disablePlay() {
+        // console.log("Board.disablePlay()");
+        this.currentPlayer = null;
+        this.node.off(cc.Node.EventType.TOUCH_START, this.playerTouchStart, this);
+    },
+
     playerTouchStart(event) {
         // console.log("Board.playerTouchStart()");
         // this.node.off(cc.Node.EventType.TOUCH_START, this.playerTouchStart, this);
@@ -168,6 +174,43 @@ cc.Class({
         var index = ix + iy * GameModel.Board.Width;
         console.log("Board, ix =", ix, ", iy =", iy, ", index =", index);
         return index;
+
+    },
+
+    showOneMove(oneMoveResult){
+        // 暗棋翻明棋
+        if (oneMoveResult.nMovingType === 1) {
+
+            let showOneGrid = this.hidePieceToShow(oneMoveResult.fromOneGridWithPosition);
+            console.log("-----------",oneMoveResult)
+        }
+    },
+
+    hidePieceToShow(fromOneGridWithPosition) {   //TODO: 棋子暗翻明
+        // console.log("hidePieceToShow(), oneGridWithPosition =", fromOneGridWithPosition);
+        fromOneGridWithPosition.oneGrid.nShowHide = GameModel.PieceState.Show;
+        var spriteFrame = this.getSpriteFrameOfOneGrid(fromOneGridWithPosition.oneGrid);
+        console.log("hidePieceToShow(), spriteFrame =", spriteFrame);
+
+
+        let node = this.lstCurrentBoardNodes[fromOneGridWithPosition.nPositionIndex];
+        node.getComponent(cc.Sprite).spriteFrame = spriteFrame;
+        // console.log("222222222222222222222222",_node)
+        // this.animation.piecesReversal(_node, spriteFrame);
+        // _node.piecesId = spriteFrame._name;
+        
+        // console.log("1111111111111111111111111111",spriteFrame)
+        return spriteFrame._name;
+    },
+
+    pieceUpAction(index){
+        let node = this.lstCurrentBoardNodes[index];
+        node.runAction(cc.scaleTo(0.2, 1.7));
+
+    },
+    pieceDownAction(index){
+        let node = this.lstCurrentBoardNodes[index];
+        node.runAction(cc.scaleTo(0.2, 1.5));
 
     }
     // update (dt) {},
