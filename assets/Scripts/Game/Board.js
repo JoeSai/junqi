@@ -1,3 +1,23 @@
+/* 棋盘position:
+
+60 61 62 63 64
+55 56 57 58 59
+50 51 52 53 54
+45 46 47 48 49
+40 41 42 43 44
+35 36 37 38 39
+
+30 31 32 33 34
+
+25 26 27 28 29 
+20 21 22 23 24 
+15 16 17 18 19 
+10 11 12 13 14
+5  6  7  8  9
+0  1  2  3  4
+
+*/
+
 import GameModel from "./GameModel";
 
 cc.Class({
@@ -145,7 +165,7 @@ cc.Class({
         var nClickPieceIndex = this.pointToPieceIndex(this.touchLoc);
         
         if (this.currentPlayer !== null) {
-            this.currentPlayer.move(nClickPieceIndex);       //TODO:玩家move 动作
+            this.currentPlayer.move(nClickPieceIndex);       //玩家move 动作
         }
     },
 
@@ -186,7 +206,7 @@ cc.Class({
         }
     },
 
-    hidePieceToShow(fromOneGridWithPosition) {   //TODO: 棋子暗翻明
+    hidePieceToShow(fromOneGridWithPosition) {   //棋子暗翻明
         // console.log("hidePieceToShow(), oneGridWithPosition =", fromOneGridWithPosition);
         fromOneGridWithPosition.oneGrid.nShowHide = GameModel.PieceState.Show;
         var spriteFrame = this.getSpriteFrameOfOneGrid(fromOneGridWithPosition.oneGrid);

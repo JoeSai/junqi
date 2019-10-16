@@ -68,15 +68,22 @@ cc.Class({
                 }
                 else{
                     //不能点击对方的棋子
+                    //不能点击空位
+                    console.log("不能点击对方的棋子,不能点击空位")
                 }
             }
         }
         //已点击过棋子
         else{
+            
             if(nClickPieceIndex === this.nSelectedPieceIndex){ //如果点击的棋子为之前拿起的
                 this.nSelectedPieceIndex = null;
                 this.board.pieceDownAction(nClickPieceIndex);  //棋子放下
 
+            }
+            //点击山界无效
+            else if(nClickPieceIndex >= 30 && nClickPieceIndex <=34){
+                console.log("点击山界无效")
             }
             else{  //点击其他位置
                 this.board.pieceDownAction(this.nSelectedPieceIndex);
@@ -95,13 +102,14 @@ cc.Class({
                 
                 this.board.disablePlay();//取消点击监听
 
-                this.gameController.getComponent("GameController").playerMove("RED", oneMove);
+                this.gameController.getComponent("GameController").playerMove(this.nColorId, oneMove);
             }
             else{
 
                 this.nSelectedPieceIndex = null;
                 console.log("不合法的走棋");
             }
+            // console.log("moveResult",moveResult)
 
 
         }
