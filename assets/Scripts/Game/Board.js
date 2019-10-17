@@ -198,11 +198,56 @@ cc.Class({
     },
 
     showOneMove(oneMoveResult){
+        console.log("oneMoveResult:",oneMoveResult)
         // 暗棋翻明棋
-        if (oneMoveResult.nMovingType === 1) {
+        if (oneMoveResult.nMovingType === GameModel.MOVING_TYPE.SHOW) {
 
             let showOneGrid = this.hidePieceToShow(oneMoveResult.fromOneGridWithPosition);
-            console.log("-----------",oneMoveResult)
+        }
+        //明棋移动到 空格
+        else if(oneMoveResult.nMovingType === GameModel.MOVING_TYPE.MOVE){
+            console.log("GameModel.gameModel.getNullGird()",GameModel.gameModel.getNullGird())
+
+            //数组变化
+            var movingNode = this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex];
+            this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();  //原位置改为null
+            this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex] = movingNode;
+
+            var targetBoardXY = this.gridIndexToBoardXY(oneMoveResult.toOneGridWithPosition.nPositionIndex);
+            
+            this.pieceMoveAction(movingNode,targetBoardXY);
+            
+        }
+        else if(oneMoveResult.nMovingType === GameModel.MOVING_TYPE.KILL){
+
+            var killedNode = this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex];
+            killedNode.runAction(cc.removeSelf(true));
+            this.lstKilledNode.push(killedNode);  //记录被杀的棋子
+
+            //数组变化
+            var movingNode = this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex];
+            this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();
+            this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex] = movingNode;
+
+            var targetBoardXY = this.gridIndexToBoardXY(oneMoveResult.toOneGridWithPosition.nPositionIndex);
+            
+            this.pieceMoveAction(movingNode,targetBoardXY);
+        }
+        else if(oneMoveResult.nMovingType === GameModel.MOVING_TYPE.KILL_DIE){
+            var killedNode = this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex];
+            var movingNode = this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex];
+
+            this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();
+            this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();
+
+            var targetBoardXY = this.gridIndexToBoardXY(oneMoveResult.toOneGridWithPosition.nPositionIndex);
+            
+            this.pieceMoveAction(movingNode,targetBoardXY);
+
+            killedNode.runAction(cc.removeSelf(true));
+            movingNode.runAction(cc.removeSelf(true));
+            this.lstKilledNode.push(killedNode);  //记录同归于尽的两个的棋子
+            this.lstKilledNode.push(movingNode); 
         }
     },
 
@@ -232,6 +277,18 @@ cc.Class({
         let node = this.lstCurrentBoardNodes[index];
         node.runAction(cc.scaleTo(0.2, 1.5));
 
-    }
+    },
+    pieceMoveAction(movingNode,targetBoardXY){
+        movingNode.runAction(cc.moveTo(0.3, targetBoardXY))  //cc.jumpTo 用跳跃的方式移动到目标位置。  20  1
+    },
+    gridIndexToBoardXY(nGridIndex) {  //index 转 xy 坐标
+
+        var gridXY = GameModel.gameModel.gridIndexToGridXY(nGridIndex);
+        // console.log("gridXY =", gridXY);
+        var x = gridXY.x * this.nOneGridWidth + this.nOneGridWidth / 2 - this.node.getContentSize().width / 2;
+        var y = gridXY.y * this.nOneGridHeight + this.nOneGridHeight / 2 - this.node.getContentSize().height / 2;
+        // console.log("node.x =", node.x, ", node.y =", node.y);
+        return new cc.v2(x, y);
+    },
     // update (dt) {},
 });

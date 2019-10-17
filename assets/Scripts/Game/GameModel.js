@@ -58,6 +58,7 @@ const   PLAYER_COLOR_RED = "RED",
             SHOW: 1,
             MOVE: 2,
             KILL: 3,
+            KILL_DIE:4,   //同归于尽
         },
         NULL_PIECE = -1,  //无棋子
         MOUNTAIN = -2,//山界和前线
@@ -293,12 +294,13 @@ class GameModel {
         }
 
          //在棋盘 "前线 && 山界"位置 加入 空棋子 id -2
-         var nullGrid = new this.OneGrid(null,null,MOUNTAIN);
+        nullGrid = new this.OneGrid(null,null,MOUNTAIN);
          for(var i = 0; i < 5; i++)
          {
              this.lstCurrentBoard.splice(30, 0, nullGrid);
          }
         
+        nullGrid = new this.OneGrid(null,null,NULL_PIECE);
         for(var i = Filed.length/2; i < Filed.length; i++)
         {
             var filed = Filed[i];
@@ -345,7 +347,7 @@ class GameModel {
             { y: 1, x: 0 },   { y: 1, x: 1 },   { y: 1, x: 2 },   { y: 1, x: 3 },   { y: 1, x: 4 },
             { y: 2, x: 0 },   { y: 2, x: 1 },   { y: 2, x: 2 },   { y: 2, x: 3 },   { y: 2, x: 4 },
             { y: 3, x: 0 },   { y: 3, x: 1 },   { y: 3, x: 2 },   { y: 3, x: 3 },   { y: 3, x: 4 },
-            { y: 4, x: 0 },   { y: 4, x: 1 },   { y: 4, x: 2 },   { y: 3, x: 3 },   { y: 4, x: 4 },
+            { y: 4, x: 0 },   { y: 4, x: 1 },   { y: 4, x: 2 },   { y: 4, x: 3 },   { y: 4, x: 4 },
             { y: 5, x: 0 },   { y: 5, x: 1 },   { y: 5, x: 2 },   { y: 5, x: 3 },   { y: 5, x: 4 },
 
             { y: 6, x: 0 },   { y: 6, x: 1 },   { y: 6, x: 2 },   { y: 6, x: 3 },   { y: 6, x: 4 },
@@ -459,7 +461,7 @@ class GameModel {
     //是否可以击杀
     canKill(nKillingPiece, nKilledPiece){
         //如果是炸弹
-        if(Pieces[nKillingPiece].name === "炸弹" && Pieces[nKilledPiece].name === "炸弹"){
+        if(Pieces[nKillingPiece].name === "炸弹" || Pieces[nKilledPiece].name === "炸弹"){
             console.log("其中一个棋子为炸弹 TODO >>")
             return true;
         }
@@ -571,6 +573,41 @@ class GameModel {
 
         //FIXME: 10.16
 
+        //明棋移动到目标位置
+        else{
+            var targetGrid = this.lstCurrentBoard[oneMove.nToIndex];
+            console.log("targetGrid:",targetGrid);
+
+            //无棋子 直接移动
+            if(targetGrid.nPieceId === NULL_PIECE){
+                moveResult.nMovingType = MOVING_TYPE.MOVE;
+                moveResult.toOneGridWithPosition = new this.OneGridWithPosition(oneMove.nToIndex, null);
+            }
+            //有棋子 同归于尽
+            else if(targetGrid.nPieceId === selectedGrid.nPieceId ||Pieces[targetGrid.nPieceId].name ==="炸弹"||Pieces[selectedGrid.nPieceId].name ==="炸弹"){
+                moveResult.nMovingType = MOVING_TYPE.KILL_DIE;
+                var toOneGird = targetGrid.clone();
+                moveResult.toOneGridWithPosition = new this.OneGridWithPosition(oneMove.nToIndex, toOneGird);
+            }
+            //有棋子 吃掉
+            else{
+                moveResult.nMovingType = MOVING_TYPE.KILL;
+                var toOneGird = targetGrid.clone();
+                moveResult.toOneGridWithPosition = new this.OneGridWithPosition(oneMove.nToIndex, toOneGird);
+            }
+
+            
+            if(moveResult.nMovingType != MOVING_TYPE.KILL_DIE){
+                this.lstCurrentBoard[oneMove.nFromIndex] = new this.OneGrid(null,null,NULL_PIECE);
+                this.lstCurrentBoard[oneMove.nToIndex] = selectedGrid;   //原位置改为null ，选中棋子改到目标位置
+            }else{
+                 //原位置 和 目标位置都改为null
+                this.lstCurrentBoard[oneMove.nFromIndex] = new this.OneGrid(null,null,NULL_PIECE);
+                this.lstCurrentBoard[oneMove.nToIndex] = new this.OneGrid(null,null,NULL_PIECE);  
+            }
+       
+        }
+
         console.log("GameModel.playerMove(), moveResult1 =", moveResult);
         return moveResult;
     }
@@ -589,6 +626,10 @@ class GameModel {
             return null;
         }
     } 
+    
+    getNullGird(){
+        return new this.OneGrid(null,null,NULL_PIECE);
+    }
 }
 
 export default GameModel;
