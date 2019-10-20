@@ -59,12 +59,18 @@ cc.Class({
             }
             //点击明棋
             else{
+                
                 if(selectedGrid.strPieceColor === this.nColorId)
                 {
-                    //记录选中的本方棋子 
-                    this.nSelectedPieceIndex = nClickPieceIndex;
-                    this.board.pieceUpAction(nClickPieceIndex);  //棋子拿起
-                    //执行选中效果 TODO:
+                    if(GameModel.Pieces[selectedGrid.nPieceId].name === "地雷" ||GameModel.Pieces[selectedGrid.nPieceId].name === "军旗"){
+                        console.log("地雷和军棋不能移动")
+                    }
+                    else{
+                        //记录选中的本方棋子 
+                        this.nSelectedPieceIndex = nClickPieceIndex;
+                        this.board.pieceUpAction(nClickPieceIndex);  //棋子拿起
+                   
+                    }
                 }
                 else{
                     //不能点击对方的棋子

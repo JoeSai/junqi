@@ -65,6 +65,7 @@ const   PLAYER_COLOR_RED = "RED",
 
         Filed = [11,13,17,21,23,41,43,47,51,53],   //大本营位置
 
+        Protect = [0,1,11,13,17,21,23,41,43,47,51,53,61,63], //大本营和行营 安全岛
         //六条铁路
         leftRailway = [5,10,15,20,25,35,40,45,50,55],
         rightRailway = [9,14,19,24,29,39,44,49,54,59],
@@ -431,8 +432,13 @@ class GameModel {
         }
         //目的地有棋子
         else{
+            //攻击棋子在行营或大本营 安全岛内
+            if(Util.inArray(nToIndex,Protect) != -1){
+                console.log("不能吃安全岛内的棋子")
+                return false;
+            }
             //不能吃暗子
-            if(toGird.nShowHide === PieceState.Hide){
+            else if(toGird.nShowHide === PieceState.Hide){
                 console.log("不能吃暗子")
                 return false;
             }
@@ -444,7 +450,7 @@ class GameModel {
                 }
                 //对方棋子
                 else{
-                    if(this.canKill(fromGird.nPieceId,toGird.nPieceId)){
+                    if(this.canKill(fromGird.nPieceId,toGird.nPieceId,toGird.strPieceColor)){
                         console.log("比对方棋子大 可以击杀")
                         return true;
                     }
@@ -459,9 +465,9 @@ class GameModel {
 
     }
     //是否可以击杀
-    canKill(nKillingPiece, nKilledPiece){
+    canKill(nKillingPiece, nKilledPiece,toGirdColor){
         //如果是炸弹
-        if(Pieces[nKillingPiece].name === "炸弹" || Pieces[nKilledPiece].name === "炸弹"){
+        if((Pieces[nKillingPiece].name === "炸弹" || Pieces[nKilledPiece].name === "炸弹")&& Pieces[nKilledPiece].name != "军旗"){
             console.log("其中一个棋子为炸弹 TODO >>")
             return true;
         }
@@ -470,8 +476,21 @@ class GameModel {
             return true;
         }
         else{
-            console.log("比大小:")
-            return nKilledPiece in Pieces[nKillingPiece].kill;
+            console.log("比大小:")   //抬棋约束
+            if(Pieces[nKilledPiece].name === "军旗"){
+                var mineAmount = this.getMinesByColor(toGirdColor)
+                console.log("敌方剩余地雷个数：",mineAmount)
+                if(mineAmount != 0){
+                    return false;   //地雷还没有挖完 ，不可以抬军旗
+                }
+                else{
+                    return true;
+                }
+               
+            }
+            else{
+                return nKilledPiece in Pieces[nKillingPiece].kill;
+            }
         }
 
     }
@@ -629,6 +648,36 @@ class GameModel {
     
     getNullGird(){
         return new this.OneGrid(null,null,NULL_PIECE);
+    }
+
+    /*胜利条件:
+    *不需要翻出所有棋子，只要地雷挖光，并且扛掉一方军旗即胜利；
+    * 
+    */
+   //FIXME:似乎存在bug
+    isGameOver(strPieceColor){ 
+        var opponentColor = this.getOpponentColor(strPieceColor);
+        var gameOver = true;
+        for(var i = 0; i < this.lstCurrentBoard.length; i++){
+            if(this.lstCurrentBoard[i].strPieceColor === opponentColor &&Pieces[this.lstCurrentBoard[i].nPieceId].name === "军旗"){
+                gameOver = false;
+                console.log(this.lstCurrentBoard[i].strPieceColor,Pieces[this.lstCurrentBoard[i].nPieceId].name,"gameover:",gameOver)
+            }
+        }
+      
+        return gameOver;
+
+    }
+
+    //通过颜色 获取剩余的地雷数 
+    getMinesByColor(strPieceColor){
+        var mineAmount = 0;
+        for(var i = 0; i < this.lstCurrentBoard.length; i++){
+            if(this.lstCurrentBoard[i].strPieceColor === strPieceColor && Pieces[this.lstCurrentBoard[i].nPieceId].name === "地雷"){
+                mineAmount++;
+            }
+        }
+        return mineAmount;
     }
 }
 

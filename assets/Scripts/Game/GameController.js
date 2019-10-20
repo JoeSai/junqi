@@ -96,16 +96,29 @@ cc.Class({
         }, 500);  //500
     },
     //一位玩家回合结束后  改变下棋者
-    afterMove(){
-        if(this.nowTurn == 1){
-            this.opponentPlayer.beginMove();
-            this.nowTurn = 0;
-            console.log("玩家--2")
+    afterMove(){  
+
+        var isGameOver = GameModel.gameModel.isGameOver(this.thisPieceColor); //TODO:判断游戏结束
+
+        //游戏结束
+        if(isGameOver){
+            console.log("游戏结束")
+            //TODO:判断输赢
         }
+
+        //游戏继续
         else{
-            this.thisPlayer.beginMove();
-            this.nowTurn = 1;
-            console.log("玩家--1")
+            if(this.nowTurn == 1){
+                this.opponentPlayer.beginMove();
+                this.nowTurn = 0;
+                console.log("玩家--2")
+            }
+            else{
+                this.thisPlayer.beginMove();
+                this.nowTurn = 1;
+                console.log("玩家--1")
+            }
         }
+       
     }
 });
