@@ -65,7 +65,7 @@ const   PLAYER_COLOR_RED = "RED",
 
         Filed = [11,13,17,21,23,41,43,47,51,53],   //大本营位置
 
-        Protect = [0,1,11,13,17,21,23,41,43,47,51,53,61,63], //大本营和行营 安全岛
+        Protect = [1,3,11,13,17,21,23,41,43,47,51,53,61,63], //大本营和行营 安全岛
         //六条铁路
         leftRailway = [5,10,15,20,25,35,40,45,50,55],
         rightRailway = [9,14,19,24,29,39,44,49,54,59],
@@ -109,9 +109,9 @@ const   PLAYER_COLOR_RED = "RED",
             "36":  midRailway3.concat(41),
             "37":  midRailway3.concat([27,41,42,43]),
             "38":  midRailway3.concat(43),
-            "56":  midRailway3.concat(51),
-            "57":  midRailway3.concat([51,52,53,62]),
-            "58":  midRailway3.concat(53),
+            "56":  midRailway4.concat(51),
+            "57":  midRailway4.concat([51,52,53,62]),
+            "58":  midRailway4.concat(53),
 
             "0": [1,5],
             "1": [0,2,6],
@@ -207,9 +207,9 @@ class GameModel {
                 this.nToIndex = nToIndex;
             }
         //prototype 属性使您有能力向对象添加属性和方法。  https://www.w3school.com.cn/jsref/jsref_prototype_array.asp
-            // OneMove.prototype.clone = function() {
-            //     return new OneMove(this.nFromIndex, this.nToIndex);
-            // };
+            OneMove.prototype.clone = function() {
+                return new OneMove(this.nFromIndex, this.nToIndex);
+            };
 
             OneMove.prototype.toString = function() {
                 // console.log("执行clone--------")
@@ -251,6 +251,23 @@ class GameModel {
 
             return OneGridWithPosition;
         })();
+    }
+
+    //克隆局面
+    clone() {
+        var gameModel = new GameModel();
+
+        gameModel.lstCurrentBoard = [];
+    
+        for (var i = 0; i < this.lstCurrentBoard.length; i++) {
+            if (this.lstCurrentBoard[i] === null) {
+                gameModel.lstCurrentBoard[i] = null;
+            } else {
+                gameModel.lstCurrentBoard.push(this.lstCurrentBoard[i].clone());
+            }
+        }
+
+        return gameModel;
     }
 
     init() {
@@ -655,6 +672,8 @@ class GameModel {
     * 
     */
    //FIXME:似乎存在bug
+
+   //目前：查看对方的军旗是否还存在 TODO: 其他的结束条件
     isGameOver(strPieceColor){ 
         var opponentColor = this.getOpponentColor(strPieceColor);
         var gameOver = true;
@@ -678,6 +697,101 @@ class GameModel {
             }
         }
         return mineAmount;
+    }
+
+    //获得颜色对应玩家 所有可能的移动 only明棋
+    getOnePlayerPossibleMove(strPieceColor){
+        var lstPossibleMoves = [];
+
+        //所有课以移动的 本方明棋
+        var lstPossibleMovePieces = this.getOnePlayerPossibleMovePieces(strPieceColor,true);
+
+        console.log("----------------------lstPossibleMovePieces:",lstPossibleMovePieces)
+        for (var i = 0; i < lstPossibleMovePieces.length; i++) {
+            var oneGridWithPosition = lstPossibleMovePieces[i];
+            var lstPossibleMoves1 = this.getPossibleMoves(oneGridWithPosition.nPositionIndex);   //FIXME:
+            // console.log("  lstPossibleMoves1(index", oneGridWithPosition.nPositionIndex, ") =", lstPossibleMoves1);
+            lstPossibleMoves = lstPossibleMoves.concat(lstPossibleMoves1);
+        }
+
+        return lstPossibleMoves;
+        console.log("lstPossibleMovePieces",lstPossibleMovePieces)
+    }
+    getPossibleMoves(nGridIndex){
+
+        var oneGrid = this.lstCurrentBoard[nGridIndex];
+        var lstPossibleMoves = [];
+
+        // 暗棋只能翻成明棋
+        if (oneGrid.nShowHide == PieceState.Hide) {
+            lstPossibleMoves.push(new this.OneMove(nGridIndex, null));
+        }
+        // 明棋只能移动
+        else{
+            for(var i = 0; i < Piece_step[nGridIndex].length; i++){
+                var nToIndex = Piece_step[nGridIndex][i];
+                console.log("----------------------nToIndex:",nGridIndex,nToIndex);
+
+                var oneMove = new this.OneMove(nGridIndex,nToIndex);
+                if(this.verifyMove(oneMove)){
+                    lstPossibleMoves.push(oneMove);   //FIXME:
+                }
+
+            }
+
+
+        }
+        return lstPossibleMoves;
+        console.log("----------------------lstPossibleMoves:",lstPossibleMoves);
+
+    }
+
+
+
+    
+     /*getOnePlayerPossibleMovePieces:
+     * -------获取可以移动的棋子-------
+     * 1.isOnlyShowPiece === true时：仅仅返回所有 自己的明棋
+     * 2.isOnlyShowPiece === false时:返回自己的所有明棋+所有剩余暗棋
+     */
+    getOnePlayerPossibleMovePieces(strPieceColor,isOnlyShowPiece){
+        var lstShowPieces =  this.getOnePlayerPieces(strPieceColor);
+        if(isOnlyShowPiece === true){
+            return lstShowPieces;
+        }
+        var lstHidePieces = this.getShowOrHidePieces(PieceState.Hide);
+        return lstShowPieces.concat(lstHidePieces);
+    }
+
+    //根据颜色 获得 明棋 状态对应的所有棋子
+    getOnePlayerPieces(strPieceColor){
+        var lstPieces = [];
+
+        for (var i = 0; i < this.lstCurrentBoard.length; i++) {
+            var oneGrid = this.lstCurrentBoard[i];
+            if (oneGrid.nPieceId !== null && oneGrid.strPieceColor === strPieceColor && oneGrid.nShowHide === PieceState.Show) {
+                var oneGridWithPosition = new this.OneGridWithPosition(i, oneGrid);
+                lstPieces.push(oneGridWithPosition);
+            }
+        }
+
+        return lstPieces;
+    }
+
+    //获取 所有 明棋/暗棋  （不分颜色）
+    getShowOrHidePieces(nPieceState) {
+        var lstPieces = [];
+
+        for (var i = 0; i < this.lstCurrentBoard.length; i++) {
+            var oneGrid = this.lstCurrentBoard[i];
+            if (oneGrid !== null && oneGrid.nShowHide === nPieceState) {
+                var oneGridWithPosition = new this.OneGridWithPosition(i, oneGrid);
+                lstPieces.push(oneGridWithPosition);
+            }
+        }
+        console.log(lstPieces);
+
+        return lstPieces;
     }
 }
 

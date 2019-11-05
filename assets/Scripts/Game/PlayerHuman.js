@@ -35,6 +35,8 @@ cc.Class({
 
 
     beginMove() {
+
+        // GameModel.gameModel.getOnePlayerPossibleMove(this.nColorId);  //
         // console.log("PlayerHuman(", this.nColorId, ") beginMove()");
         // console.log("board3 =", this.board);
         this.bMove = true;

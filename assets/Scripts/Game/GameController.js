@@ -1,5 +1,5 @@
 import GameModel from "./GameModel";
-
+import AI from "./AI";
 cc.Class({
     extends: cc.Component,
 
@@ -20,8 +20,13 @@ cc.Class({
         this.opponentPlayer = null;
 
         this.thisPlayer = this.playerHuman.getComponent("PlayerHuman");
-        this.opponentPlayer = this.playerHuman2.getComponent("PlayerHuman2");
-
+        // this.opponentPlayer = this.playerHuman2.getComponent("PlayerHuman2");
+        
+        //创建AI
+        this.opponentPlayer = new AI();
+        this.opponentPlayer.setController(this);
+        this.opponentPlayer.setOption({ depth: 2 })
+        
         // 本方棋子颜色和对方棋子颜色
         this.thisPieceColor = null;
         this.opponentPieceColor = null;
@@ -36,7 +41,7 @@ cc.Class({
         this.init(this.thisPlayer, this.opponentPlayer, coin);
     },
 
-    // update (dt) {},
+
     init(thisPlayer, opponentPlayer, coin) {
         this.boardNode.getComponent("Board").init(); //初始化棋盘，棋子位置设置。
 
