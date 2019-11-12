@@ -31,18 +31,18 @@ const   PLAYER_COLOR_RED = "RED",
         PLAYER_COLOR_BLACK = "BLACK",
         Pieces = [
             //TODO: 炸弹吃子 === 同归于尽
-            { name: "炸弹", id: 0, amount: 2, kill: {"0": 1, "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "10": 1, "11": 1 } },
-            { name: "司令", id: 1, amount: 1, kill: {"1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 } },
-            { name: "军长", id: 2, amount: 1, kill: {"2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 } },
-            { name: "师长", id: 3, amount: 2, kill: {"3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 } },
-            { name: "旅长", id: 4, amount: 2, kill: {"4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 } },
-            { name: "团长", id: 5, amount: 2, kill: {"5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 } },
-            { name: "营长", id: 6, amount: 2, kill: {"6": 1, "7": 1, "8": 1, "9": 1, "11": 1 } }, 
-            { name: "连长", id: 7, amount: 3, kill: {"7": 1, "8": 1, "9": 1, "11": 1 } }, 
-            { name: "排长", id: 8, amount: 3, kill: {"8": 1, "9": 1, "11": 1 } }, 
-            { name: "工兵", id: 9, amount: 3, kill: {"9": 1, "10": 1, "11": 1  } }, 
-            { name: "地雷", id: 10, amount: 3, kill: {} }, 
-            { name: "军旗", id: 11, amount: 1, kill: {} }, 
+            { name: "炸弹", id: 0, amount: 2, kill: {"0": 1, "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "10": 1, "11": 1 }, score: 22 },
+            { name: "司令", id: 1, amount: 1, kill: {"1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 }, score: 30 },
+            { name: "军长", id: 2, amount: 1, kill: {"2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 }, score: 24 },
+            { name: "师长", id: 3, amount: 2, kill: {"3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 }, score: 22 },
+            { name: "旅长", id: 4, amount: 2, kill: {"4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 }, score: 20 },
+            { name: "团长", id: 5, amount: 2, kill: {"5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "11": 1 }, score: 18 },
+            { name: "营长", id: 6, amount: 2, kill: {"6": 1, "7": 1, "8": 1, "9": 1, "11": 1 }, score: 16 }, 
+            { name: "连长", id: 7, amount: 3, kill: {"7": 1, "8": 1, "9": 1, "11": 1 }, score: 14 }, 
+            { name: "排长", id: 8, amount: 3, kill: {"8": 1, "9": 1, "11": 1 }, score: 12 }, 
+            { name: "工兵", id: 9, amount: 3, kill: {"9": 1, "10": 1, "11": 1  }, score: 10 }, 
+            { name: "地雷", id: 10, amount: 3, kill: {}, score: 18 }, 
+            { name: "军旗", id: 11, amount: 1, kill: {}, score: 1000 }, 
         ],
         PieceState = {
             Show: 1,
@@ -65,7 +65,7 @@ const   PLAYER_COLOR_RED = "RED",
 
         Filed = [11,13,17,21,23,41,43,47,51,53],   //大本营位置
 
-        Protect = [1,3,11,13,17,21,23,41,43,47,51,53,61,63], //大本营和行营 安全岛
+        Protect = [11,13,17,21,23,41,43,47,51,53], //行营 安全岛   //大本营 因为在开始时候默认有棋子 会影响抬军棋、挖地雷 故不做保护
         //六条铁路
         leftRailway = [5,10,15,20,25,35,40,45,50,55],
         rightRailway = [9,14,19,24,29,39,44,49,54,59],
@@ -109,9 +109,9 @@ const   PLAYER_COLOR_RED = "RED",
             "36":  midRailway3.concat(41),
             "37":  midRailway3.concat([27,41,42,43]),
             "38":  midRailway3.concat(43),
-            "56":  midRailway4.concat(51),
+            "56":  midRailway4.concat(51,61),
             "57":  midRailway4.concat([51,52,53,62]),
-            "58":  midRailway4.concat(53),
+            "58":  midRailway4.concat([53,63]),
 
             "0": [1,5],
             "1": [0,2,6],
@@ -136,7 +136,7 @@ const   PLAYER_COLOR_RED = "RED",
             "48": [43,47,49,53],
             "51": [45,46,47,50,52,55,56,57],
             "52": [47,51,53,57],
-            "53": [47,48,49,52,54,27,58,59],
+            "53": [47,48,49,52,54,57,58,59],
             "60": [55,61],
             "61": [56,60,62],
             "62": [57,61,63],
@@ -178,6 +178,14 @@ class GameModel {
     static get NULL_PIECE() {
         return NULL_PIECE;
     }
+    static get PLAYER_COLOR_RED() {
+        return PLAYER_COLOR_RED;
+    }
+
+    static get PLAYER_COLOR_BLACK() {
+        return PLAYER_COLOR_BLACK;
+    }
+
 
 //构造函数
     constructor() {
@@ -392,6 +400,7 @@ class GameModel {
         return this.lstCurrentBoard[nClickPieceIndex];
     }
 
+//----------------------------------console.log---------------------------------------
 
     //检验走子是否符合规则
     verifyMove(oneMove) {
@@ -429,7 +438,7 @@ class GameModel {
                 return this.verifyMove_canHit(oneMove.nFromIndex,oneMove.nToIndex);
             }
             else{  //有棋子阻挡不可通行
-                console.log("有棋子阻挡不可通行")
+                // console.log("有棋子阻挡不可通行")
                 return false;
             }
         }
@@ -447,32 +456,33 @@ class GameModel {
         if(toGird.nPieceId === NULL_PIECE){   
             return true;
         }
+        
         //目的地有棋子
         else{
             //攻击棋子在行营或大本营 安全岛内
             if(Util.inArray(nToIndex,Protect) != -1){
-                console.log("不能吃安全岛内的棋子")
+                // console.log("不能吃安全岛内的棋子")
                 return false;
             }
             //不能吃暗子
             else if(toGird.nShowHide === PieceState.Hide){
-                console.log("不能吃暗子")
+                // console.log("不能吃暗子")
                 return false;
             }
             else{
                 //不能吃自己的棋子
                 if(toGird.strPieceColor === fromGird.strPieceColor){
-                    console.log("不能吃掉自己的棋子")
+                    // console.log("不能吃掉自己的棋子")
                     return false;
                 }
                 //对方棋子
                 else{
                     if(this.canKill(fromGird.nPieceId,toGird.nPieceId,toGird.strPieceColor)){
-                        console.log("比对方棋子大 可以击杀")
+                        // console.log("比对方棋子大 可以击杀")
                         return true;
                     }
                     else{
-                        console.log("吃不掉")
+                        // console.log("吃不掉")
                         return false;
                     }
                 }
@@ -485,18 +495,18 @@ class GameModel {
     canKill(nKillingPiece, nKilledPiece,toGirdColor){
         //如果是炸弹
         if((Pieces[nKillingPiece].name === "炸弹" || Pieces[nKilledPiece].name === "炸弹")&& Pieces[nKilledPiece].name != "军旗"){
-            console.log("其中一个棋子为炸弹 TODO >>")
+            // console.log("其中一个棋子为炸弹 TODO >>")
             return true;
         }
         else if(nKillingPiece === nKilledPiece){
-            console.log("两个相同棋子，同归于尽")
+            // console.log("两个相同棋子，同归于尽")
             return true;
         }
         else{
-            console.log("比大小:")   //抬棋约束
+            // console.log("比大小:")   //抬棋约束
             if(Pieces[nKilledPiece].name === "军旗"){
                 var mineAmount = this.getMinesByColor(toGirdColor)
-                console.log("敌方剩余地雷个数：",mineAmount)
+                // console.log("敌方剩余地雷个数：",mineAmount)
                 if(mineAmount != 0){
                     return false;   //地雷还没有挖完 ，不可以抬军旗
                 }
@@ -512,7 +522,7 @@ class GameModel {
 
     }
     verifyMove_Passable(nFromIndex,nToIndex){
-        console.log("verifyMove_Passable:",nFromIndex,nToIndex)
+        // console.log("verifyMove_Passable:",nFromIndex,nToIndex)
         var passable = false;
 
         //检测无阻挡可到达的位置
@@ -533,10 +543,10 @@ class GameModel {
                     nToIndex= temp;
                 }
                 for(var j = Number(Util.inArray(nFromIndex,verRailway[i])) + 1; j<Util.inArray(nToIndex,verRailway[i]);j++){
-                    console.log("j++++++",j,"search +++++++++",verRailway[i][j]);
+                    // console.log("j++++++",j,"search +++++++++",verRailway[i][j]);
                     var midGird = this.getOneGrid(verRailway[i][j]);
                     if(midGird.nPieceId >= 0){
-                        passable = false;   //TODO:可以优化 ，有阻挡后直接返回 不再检测 阻挡后面的棋子
+                        passable = false;   //TODO:可以优化 ，有阻挡后直接返回 不再检测 阻挡后面的棋子 break
                         // console.log("有棋子阻挡")
                     }
                 }
@@ -554,7 +564,7 @@ class GameModel {
                     nToIndex= temp;
                 }
                 for(var j = Number(Util.inArray(nFromIndex,horRailway[i])) + 1; j<Util.inArray(nToIndex,horRailway[i]);j++){
-                    console.log("j++++++",j,"search +++++++++",horRailway[i][j]);
+                    // console.log("j++++++",j,"search +++++++++",horRailway[i][j]);
                     var midGird = this.getOneGrid(horRailway[i][j]);
                     if(midGird.nPieceId >= 0){
                         passable = false;
@@ -564,7 +574,7 @@ class GameModel {
             }
         }
 
-        console.log("passable:",passable);
+        // console.log("passable:",passable);
         return passable;
     }
     verifyMove_GirdInBoard(oneMove){  //检验行棋 是否超出边界
@@ -583,7 +593,7 @@ class GameModel {
 
         // 选择要走的棋子
         var selectedGrid = this.lstCurrentBoard[oneMove.nFromIndex];
-        console.log("selectedGrid",selectedGrid);
+        // console.log("selectedGrid",selectedGrid);
 
         // 返回棋子的变化
         var fromOneGird = selectedGrid.clone();
@@ -612,7 +622,7 @@ class GameModel {
         //明棋移动到目标位置
         else{
             var targetGrid = this.lstCurrentBoard[oneMove.nToIndex];
-            console.log("targetGrid:",targetGrid);
+            // console.log("targetGrid:",targetGrid);
 
             //无棋子 直接移动
             if(targetGrid.nPieceId === NULL_PIECE){
@@ -644,7 +654,7 @@ class GameModel {
        
         }
 
-        console.log("GameModel.playerMove(), moveResult1 =", moveResult);
+        // console.log("GameModel.playerMove(), moveResult1 =", moveResult);
         return moveResult;
     }
 
@@ -675,6 +685,9 @@ class GameModel {
 
    //目前：查看对方的军旗是否还存在 TODO: 其他的结束条件
     isGameOver(strPieceColor){ 
+       if(strPieceColor === undefined){//还未确定颜色
+           return false;
+       }
         var opponentColor = this.getOpponentColor(strPieceColor);
         var gameOver = true;
         for(var i = 0; i < this.lstCurrentBoard.length; i++){
@@ -713,9 +726,9 @@ class GameModel {
             // console.log("  lstPossibleMoves1(index", oneGridWithPosition.nPositionIndex, ") =", lstPossibleMoves1);
             lstPossibleMoves = lstPossibleMoves.concat(lstPossibleMoves1);
         }
-
+        console.log("lstPossibleMoves",lstPossibleMoves)
         return lstPossibleMoves;
-        console.log("lstPossibleMovePieces",lstPossibleMovePieces)
+       
     }
     getPossibleMoves(nGridIndex){
 
@@ -726,15 +739,19 @@ class GameModel {
         if (oneGrid.nShowHide == PieceState.Hide) {
             lstPossibleMoves.push(new this.OneMove(nGridIndex, null));
         }
+        else if(Pieces[oneGrid.nPieceId].name === "军旗" || Pieces[oneGrid.nPieceId].name === "地雷" ){
+            // console.log("AI 不能移动军旗、地雷");
+        }
         // 明棋只能移动
         else{
             for(var i = 0; i < Piece_step[nGridIndex].length; i++){
                 var nToIndex = Piece_step[nGridIndex][i];
-                console.log("----------------------nToIndex:",nGridIndex,nToIndex);
+                // console.log("----------------------nToIndex:",nGridIndex,nToIndex);
 
                 var oneMove = new this.OneMove(nGridIndex,nToIndex);
                 if(this.verifyMove(oneMove)){
-                    lstPossibleMoves.push(oneMove);   //FIXME:
+                    lstPossibleMoves.push(oneMove);   //FIXME: 校验move合法则 push  
+                                                    
                 }
 
             }
@@ -742,7 +759,7 @@ class GameModel {
 
         }
         return lstPossibleMoves;
-        console.log("----------------------lstPossibleMoves:",lstPossibleMoves);
+        // console.log("----------------------lstPossibleMoves:",lstPossibleMoves);
 
     }
 
@@ -792,6 +809,56 @@ class GameModel {
         console.log(lstPieces);
 
         return lstPieces;
+    }
+
+
+    //计算相对分数 评估函数
+    getRelativeScore(gameModel, strPieceColor){
+        var lstCurrentBoard = gameModel.lstCurrentBoard;  //FIXME:
+        // console.log("getRelativeScore+++++++++lstCurrentBoard:",lstCurrentBoard)
+        var strPieceColorScore = 0;
+        var opponentColorScore = 0;
+        for (var i = 0; i < lstCurrentBoard.length; i++) {
+            var oneGrid = lstCurrentBoard[i];
+
+            if(oneGrid.strPieceColor !== null){
+                if(oneGrid.strPieceColor === strPieceColor){
+                    strPieceColorScore += Pieces[oneGrid.nPieceId].score;
+                }
+                else{
+                    opponentColorScore += Pieces[oneGrid.nPieceId].score;
+                }
+            }
+         
+        }
+
+        // console.log("strPieceColorScore opponentColorScore",strPieceColorScore,opponentColorScore)
+        return strPieceColorScore - opponentColorScore;
+    }
+
+    //获得暗棋 及 数量  BLACK_0：2
+    getHidePieces() {
+        var dictHidePieces = {};
+        var nNumHidePieces = 0;
+
+        for (var i = 0; i < this.lstCurrentBoard.length; i++) {
+            var oneGrid = this.lstCurrentBoard[i];
+            if (oneGrid.nPieceId >= 0 && oneGrid.nShowHide === PieceState.Hide) {
+           
+                var strKey = oneGrid.strPieceColor + "_" + oneGrid.nPieceId;   //BLACK_0
+                if (strKey in dictHidePieces) { //JavaScript的in操作符在**if( in )**语句中 ，用来判断一个属性是否属于一个对象。
+                    var nCount = dictHidePieces[strKey];
+                    nCount++;
+                    dictHidePieces[strKey] = nCount;
+                } else {
+                    dictHidePieces[strKey] = 1;
+                }
+
+                nNumHidePieces++;
+            }
+        }
+
+        return { dictHidePieces: dictHidePieces, nNumHidePieces: nNumHidePieces };
     }
 }
 
