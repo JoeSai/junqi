@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "16a03936-1a69-4205-bb09-e4e512ca3410",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "totaBattlel": {
+      "ver": "1.0.4",
+      "uuid": "5041759a-9e10-4f3a-874a-43bbc9bc7652",
+      "rawTextureUuid": "16a03936-1a69-4205-bb09-e4e512ca3410",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 1,
+      "trimY": 0,
+      "width": 198,
+      "height": 200,
+      "rawWidth": 200,
+      "rawHeight": 200,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
