@@ -1,12 +1,4 @@
-// Learn cc.Class:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/class.html
-//  - [English] http://docs.cocos2d-x.org/creator/manual/en/scripting/class.html
-// Learn Attribute:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://docs.cocos2d-x.org/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+import GameModel from "./GameModel";
 
 cc.Class({
     extends: cc.Component,
@@ -20,35 +12,87 @@ cc.Class({
         audio_move:{
             default: null,
             type: cc.AudioClip
-        }
+        },
+        audio_kill:{
+            default: null,
+            type: cc.AudioClip
+        },
+        audio_kill_die:{
+            default: null,
+            type: cc.AudioClip
+        },
+        select_icon:cc.Node,
 
     },
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad () {
+        window.Animation = this;
+        this.haveVolume = true;  //是否打开音量
+    },
 
     start () {
 
     },
 
-    pieceUpAction(node){
+    pieceUpAction(node,targetBoardXY){  //棋子node 和 棋子中心position
         node.runAction(cc.scaleTo(0.2, 1.7));
-        cc.audioEngine.play(this.audio_select, false, 1);
+        this.playAudio("pieceUpAction");
+        this.select_icon.setPosition(targetBoardXY);
     },
     pieceDownAction(node){
         node.runAction(cc.scaleTo(0.2, 1.5));
-        cc.audioEngine.play(this.audio_select, false, 1);
+        this.playAudio("pieceDownAction");
     },
     pieceDownBeforeMoveAction(node){  //棋子移动 之前 缩小动作 不播放音效
         node.runAction(cc.scaleTo(0.2, 1.5));
     },
-    pieceMoveAction(movingNode,targetBoardXY){
+    pieceMoveAction(movingNode,fromBoardXY,targetBoardXY,nMovingType){
+        this.select_icon.setPosition(fromBoardXY);
         movingNode.runAction(cc.moveTo(0.3, targetBoardXY))
-        cc.audioEngine.play(this.audio_move,false,1);
+        switch (nMovingType){
+            case GameModel.MOVING_TYPE.MOVE:
+                this.playAudio("pieceMoveAction_MOVE");
+                break;
+            case GameModel.MOVING_TYPE.KILL:
+                this.playAudio("pieceMoveAction_KILL");
+                break;
+            case GameModel.MOVING_TYPE.KILL_DIE:
+                this.playAudio("pieceMoveAction_KILL_DIE");
+                break;
+        }
+        this.select_icon.runAction(cc.moveTo(0.3,targetBoardXY));
     },
-    hidePieceToShow(){  //翻棋只播放音效
-        cc.audioEngine.play(this.audio_select, false, 1);
+    hidePieceToShow(targetBoardXY){  //翻棋只播放音效
+        this.playAudio("hidePieceToShow");
+        this.select_icon.setPosition(targetBoardXY);
+
+    },
+    playAudio(type){
+        if(this.haveVolume){  //如果开启音量
+            switch (type){
+                case "pieceUpAction":
+                    cc.audioEngine.play(this.audio_select, false, 1);
+                    break;
+                case "pieceDownAction":
+                    cc.audioEngine.play(this.audio_select, false, 1);
+                    break;
+                case "pieceMoveAction_MOVE":
+                    cc.audioEngine.play(this.audio_move, false, 1);
+                    break
+                case "pieceMoveAction_KILL":
+                    cc.audioEngine.play(this.audio_move, false, 1);
+                    break
+                case "pieceMoveAction_KILL_DIE":
+                    cc.audioEngine.play(this.audio_move, false, 1);
+                    break
+                case "hidePieceToShow":
+                    cc.audioEngine.play(this.audio_select, false, 1);
+                    break
+            }
+        }
+        
     }
     
     

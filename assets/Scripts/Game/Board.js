@@ -31,11 +31,13 @@ cc.Class({
 
     onLoad () {
         
+        this.animation = this.getComponent("Animation");
 
         //每一个棋子 所占 地图格子的 长和宽
         this.nOneGridWidth = this.node.getContentSize().width / GameModel.Board.Width;
         this.nOneGridHeight = this.node.getContentSize().height / GameModel.Board.Height;
         this.SPRITEFRAME_HIDE = "Hide";
+
     },
 
     start () {
@@ -213,9 +215,10 @@ cc.Class({
             this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();  //原位置改为null
             this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex] = movingNode;
 
+            var fromBoardXY = this.gridIndexToBoardXY(oneMoveResult.fromOneGridWithPosition.nPositionIndex);
             var targetBoardXY = this.gridIndexToBoardXY(oneMoveResult.toOneGridWithPosition.nPositionIndex);
             
-            this.pieceMoveAction(movingNode,targetBoardXY);
+            this.pieceMoveAction(movingNode,fromBoardXY,targetBoardXY,GameModel.MOVING_TYPE.MOVE);
             
         }
         else if(oneMoveResult.nMovingType === GameModel.MOVING_TYPE.KILL){
@@ -229,9 +232,10 @@ cc.Class({
             this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();
             this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex] = movingNode;
 
+            var fromBoardXY = this.gridIndexToBoardXY(oneMoveResult.fromOneGridWithPosition.nPositionIndex);
             var targetBoardXY = this.gridIndexToBoardXY(oneMoveResult.toOneGridWithPosition.nPositionIndex);
             
-            this.pieceMoveAction(movingNode,targetBoardXY);
+            this.pieceMoveAction(movingNode,fromBoardXY,targetBoardXY,GameModel.MOVING_TYPE.KILL);
         }
         else if(oneMoveResult.nMovingType === GameModel.MOVING_TYPE.KILL_DIE){
             var killedNode = this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex];
@@ -240,9 +244,10 @@ cc.Class({
             this.lstCurrentBoardNodes[oneMoveResult.fromOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();
             this.lstCurrentBoardNodes[oneMoveResult.toOneGridWithPosition.nPositionIndex] = GameModel.gameModel.getNullGird();
 
+            var fromBoardXY = this.gridIndexToBoardXY(oneMoveResult.fromOneGridWithPosition.nPositionIndex);
             var targetBoardXY = this.gridIndexToBoardXY(oneMoveResult.toOneGridWithPosition.nPositionIndex);
             
-            this.pieceMoveAction(movingNode,targetBoardXY);
+            this.pieceMoveAction(movingNode,fromBoardXY,targetBoardXY,GameModel.MOVING_TYPE.KILL_DIE);
 
             killedNode.runAction(cc.removeSelf(true));
             movingNode.runAction(cc.removeSelf(true));
@@ -252,34 +257,50 @@ cc.Class({
     },
 
     hidePieceToShow(fromOneGridWithPosition) {   //棋子暗翻明
-        // console.log("hidePieceToShow(), oneGridWithPosition =", fromOneGridWithPosition);
+        // console.log("hidePieceToShow(), oneGridWithPosition =", fromOneGridWithPosition);pieceUpAction
+
         fromOneGridWithPosition.oneGrid.nShowHide = GameModel.PieceState.Show;
         var spriteFrame = this.getSpriteFrameOfOneGrid(fromOneGridWithPosition.oneGrid);
-        console.log("hidePieceToShow(), spriteFrame =", spriteFrame);
-
 
         let node = this.lstCurrentBoardNodes[fromOneGridWithPosition.nPositionIndex];
         node.getComponent(cc.Sprite).spriteFrame = spriteFrame;
         // console.log("222222222222222222222222",_node)
         // this.animation.piecesReversal(_node, spriteFrame);
         // _node.piecesId = spriteFrame._name;
-        
+        let boardXY = this.gridIndexToBoardXY(fromOneGridWithPosition.nPositionIndex);
+        this.animation.hidePieceToShow(boardXY);
+
         // console.log("1111111111111111111111111111",spriteFrame)
         return spriteFrame._name;
     },
 
-    pieceUpAction(index){
+    pieceUpAction(index){ //选中棋子
         let node = this.lstCurrentBoardNodes[index];
-        node.runAction(cc.scaleTo(0.2, 1.7));
+        let boardXY = this.gridIndexToBoardXY(index);
+        // node.runAction(cc.scaleTo(0.2, 1.7));
+        this.animation.pieceUpAction(node,boardXY);
 
     },
-    pieceDownAction(index){
+    pieceDownAction(index){ //棋子不移动的缩小
         let node = this.lstCurrentBoardNodes[index];
-        node.runAction(cc.scaleTo(0.2, 1.5));
+        // node.runAction(cc.scaleTo(0.2, 1.5));
+        this.animation.pieceDownAction(node);
 
     },
-    pieceMoveAction(movingNode,targetBoardXY){
-        movingNode.runAction(cc.moveTo(0.3, targetBoardXY))  //cc.jumpTo 用跳跃的方式移动到目标位置。  20  1
+
+    pieceDownBeforeMoveAction(index){  //棋子移动之前的缩小
+        let node = this.lstCurrentBoardNodes[index];
+        this.animation.pieceDownBeforeMoveAction(node);
+    },
+    /*
+    *移动三种不同情况 音效不同
+    *1.移动到空格
+    *2.吃子pieceMoveAction
+    *3.同归于尽
+    */
+    pieceMoveAction(movingNode,fromBoardXY,targetBoardXY,nMovingType){
+        this.animation.pieceMoveAction(movingNode,fromBoardXY,targetBoardXY,nMovingType)
+        // movingNode.runAction(cc.moveTo(0.3, targetBoardXY))  //cc.jumpTo 用跳跃的方式移动到目标位置。  20  1
     },
     gridIndexToBoardXY(nGridIndex) {  //index 转 xy 坐标
 

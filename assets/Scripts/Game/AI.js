@@ -46,7 +46,7 @@ class AI {
         var isMax = true;
 
         var valueWithMove = this.AlphaBeta(anotherGameModel,this.depth,alpha,beta,isMax);
-        // console.log("valueMove11111:",valueWithMove);
+        console.log("行棋de分值 -------------------- :",valueWithMove.value);
 
         // console.log("lstMaxValueMove----------------->",valueWithMove.lstMaxValueMove)
 
@@ -84,20 +84,21 @@ class AI {
             //有暗棋可以翻时
             if(this.strategy_HideToShow(anotherGameModel)){
                 var opponent_valueWithMove = this.AlphaBeta(anotherGameModel,this.depth - 1,alpha,beta,false);
+                console.log("不行棋de分值 -------------------- ",opponent_valueWithMove.value)
 
                 if(valueWithMove.value > opponent_valueWithMove.value){
-                    console.log("222222行棋比翻棋更优")
+                    console.log("222222行棋比翻棋更优",valueWithMove.lstMaxValueMove)
                     var amountOfMoves = valueWithMove.lstMaxValueMove.length;
                     var randomIndex = Math.floor(Math.random() * amountOfMoves);
                     return valueWithMove.lstMaxValueMove[randomIndex];
                 }
                 else if(valueWithMove.value === opponent_valueWithMove.value){
                     if(Math.random() >= 0.5){
-                        console.log("222222行棋分值和不行棋分值一样，选择了翻棋");
+                        console.log("222222行棋分值和不行棋分值一样，选择了翻棋",valueWithMove.lstMaxValueMove);
                         return this.strategy_HideToShow(anotherGameModel);
                     }
                     else{
-                        console.log("222222行棋分值和不行棋分值一样，选择了行棋");
+                        console.log("222222行棋分值和不行棋分值一样，选择了行棋",valueWithMove.lstMaxValueMove);
                         var amountOfMoves = valueWithMove.lstMaxValueMove.length;
                         var randomIndex = Math.floor(Math.random() * amountOfMoves);
                         return valueWithMove.lstMaxValueMove[randomIndex];
@@ -261,16 +262,16 @@ class AI {
     AlphaBeta(currentGameModel, depth, alpha, beta, isMax){
 
         //当前游戏胜负是否分出
-        console.log("AI AlphaBeta depth",depth)
+        // console.log("AI AlphaBeta depth",depth)
         var currentResult = currentGameModel.isGameOver(this.strPieceColor);
 
         //AI取胜
-        if(currentResult === true){
+        if(currentResult === GameModel.GameOver_State.Win){
             return {value : 10000, move : null}
         }
         
         if (depth === 0) {
-            console.log("evaluate() -----------------------")
+            // console.log("evaluate() -----------------------")
             return {value : this.evaluate(currentGameModel, this.strPieceColor), move : null};       //TODO:理解-----
            // return 评价函数
         }
@@ -424,11 +425,11 @@ class AI {
 
         //return相对分数，（本方得分 - 对方得分）
         
-        var relativeScore = GameModel.gameModel.getRelativeScore(gameModel,strPieceColor);
+        var relativeScore = GameModel.gameModel.getRelativeScore(gameModel,strPieceColor).relativeScore;
         if(this.bDebug){
             console.log("  evaluate(), relativeScore =", relativeScore);
         }
-        
+        // console.log("  evaluate(), relativeScore =", relativeScore);
 
         return relativeScore;
     }

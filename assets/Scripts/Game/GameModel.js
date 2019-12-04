@@ -54,6 +54,13 @@ const   PLAYER_COLOR_RED = "RED",
             Height: 13,
         },
 
+        //游戏结束状态
+        GameOver_State = {
+            Go:0,
+            Win:1,
+            Draw:2,
+            Lose:3
+        },
         MOVING_TYPE = {
             SHOW: 1,
             MOVE: 2,
@@ -184,6 +191,9 @@ class GameModel {
 
     static get PLAYER_COLOR_BLACK() {
         return PLAYER_COLOR_BLACK;
+    }
+    static get GameOver_State() {
+        return GameOver_State;
     }
 
 
@@ -683,24 +693,97 @@ class GameModel {
     */
    //FIXME:似乎存在bug
 
-   //目前：查看对方的军旗是否还存在 TODO: 其他的结束条件
-    isGameOver(strPieceColor){ 
-       if(strPieceColor === undefined){//还未确定颜色
-           return false;
-       }
+
+   /*
+    本方移动一步后 进行胜负判断：
+
+    //本方无损失
+    1.	抬走对方军棋 --------win
+    2.	对方无可移动的子、无暗棋可翻 ------win
+    3.	对方无可移动的子、有暗棋可翻 (但是暗棋中无对方可以移动的棋子) ------win
+
+    //本方有损失
+    1.最后一个可移动的棋子 与敌方棋子同归于尽，对方还有棋子（可移动） ----lose
+    2.最后一个可移动的棋子 与敌方棋子同归于尽，对方也没有可移动的棋子了---- draw
+
+    //步数问题 TODO
+
+    //其他情况 游戏继续
+   */
+    isGameOver(strPieceColor){ ;
+        if(strPieceColor === undefined){//还未确定颜色
+           return GameOver_State.Go;
+        }
         var opponentColor = this.getOpponentColor(strPieceColor);
-        var gameOver = true;
+        var has_flag = false; //军旗是否还在
         for(var i = 0; i < this.lstCurrentBoard.length; i++){
             if(this.lstCurrentBoard[i].strPieceColor === opponentColor &&Pieces[this.lstCurrentBoard[i].nPieceId].name === "军旗"){
-                gameOver = false;
-                console.log(this.lstCurrentBoard[i].strPieceColor,Pieces[this.lstCurrentBoard[i].nPieceId].name,"gameover:",gameOver)
+                has_flag = true;
+                break;
+                // console.log(this.lstCurrentBoard[i].strPieceColor,Pieces[this.lstCurrentBoard[i].nPieceId].name,"gameover:",gameOver)
             }
         }
+        //1.	抬走对方军棋 --------win
+        if(!has_flag){
+            console.log("111 抬走对方军棋 --------win")
+            return GameOver_State.Win;
+        }
+
+        console.log("明棋是否可移动？",this.isOnePlayerHasPossibleMove(strPieceColor),"暗棋是否有必要翻？",this.isOnePlayerHasCanMovePieces(strPieceColor))
+        //2.	对方无可移动的子、无暗棋可翻 ------win
+        //3.	对方无可移动的子、有暗棋可翻 (但是暗棋中无对方可以移动的棋子) ------win
+        //5. 最后一个可移动的棋子 与敌方棋子同归于尽，对方也没有可移动的棋子了--
+        if(this.isOnePlayerHasPossibleMove(opponentColor) === false && this.isOnePlayerHasCanMovePieces(opponentColor) === false){
+            if(this.isOnePlayerHasPossibleMove(strPieceColor) === false && this.isOnePlayerHasCanMovePieces(strPieceColor) === false){
+                console.log("555 双方 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
+                return GameOver_State.Draw;
+            }
+            else{
+                console.log(" 2233 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
+                return GameOver_State.Win;
+            }
+           
+        }
+        //4.（！本方！）最后一个可移动的棋子 与敌方棋子同归于尽 对方还有棋子（可移动)
+        if(this.isOnePlayerHasPossibleMove(strPieceColor) === false && this.isOnePlayerHasCanMovePieces(strPieceColor) === false){
+            console.log(" 4 本方 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
+            return GameOver_State.Lose;
+        }
       
-        return gameOver;
+       
+        return GameOver_State.Go;
 
     }
 
+    //通过颜色 查看暗棋中 是否还有 可以移动的棋子 （走投无路时候，是否还有必要翻棋）
+    isOnePlayerHasCanMovePieces(strPieceColor){
+        var hasCanMovePieces = false;
+        for(var i = 0; i < this.lstCurrentBoard.length; i++){
+            if(this.lstCurrentBoard[i].strPieceColor === strPieceColor && this.lstCurrentBoard[i].nShowHide === PieceState.Hide &&this.lstCurrentBoard[i].nPieceId < 10){
+               hasCanMovePieces = true;
+               break;       //发现存在 则 停止查询
+            }
+        }
+        return hasCanMovePieces;
+    }
+
+    //通过颜色 查看暗棋中 是否还有 可以移动的棋子 （是否被逼得走投无路）
+    isOnePlayerHasPossibleMove(strPieceColor){
+
+        var hasPossibleMove = false;
+        //所有可以移动的 本方明棋
+        var lstPossibleMovePieces = this.getOnePlayerPossibleMovePieces(strPieceColor,true);
+        for (var i = 0; i < lstPossibleMovePieces.length; i++) {
+            var oneGridWithPosition = lstPossibleMovePieces[i];
+            var lstPossibleMoves = this.getPossibleMoves(oneGridWithPosition.nPositionIndex);   //FIXME:
+            if(lstPossibleMoves.length > 0){
+                hasPossibleMove = true;  //发现存在 有可以移动的明棋 则停止查询
+                break;
+            }
+        }
+        return hasPossibleMove;
+    }
+    
     //通过颜色 获取剩余的地雷数 
     getMinesByColor(strPieceColor){
         var mineAmount = 0;
@@ -716,17 +799,17 @@ class GameModel {
     getOnePlayerPossibleMove(strPieceColor){
         var lstPossibleMoves = [];
 
-        //所有课以移动的 本方明棋
+        //所有可以移动的 本方明棋
         var lstPossibleMovePieces = this.getOnePlayerPossibleMovePieces(strPieceColor,true);
 
-        console.log("----------------------lstPossibleMovePieces:",lstPossibleMovePieces)
+        // console.log("----------------------lstPossibleMovePieces:",lstPossibleMovePieces)
         for (var i = 0; i < lstPossibleMovePieces.length; i++) {
             var oneGridWithPosition = lstPossibleMovePieces[i];
             var lstPossibleMoves1 = this.getPossibleMoves(oneGridWithPosition.nPositionIndex);   //FIXME:
             // console.log("  lstPossibleMoves1(index", oneGridWithPosition.nPositionIndex, ") =", lstPossibleMoves1);
             lstPossibleMoves = lstPossibleMoves.concat(lstPossibleMoves1);
         }
-        console.log("lstPossibleMoves",lstPossibleMoves)
+        // console.log("lstPossibleMoves",lstPossibleMoves)
         return lstPossibleMoves;
        
     }
@@ -833,7 +916,7 @@ class GameModel {
         }
 
         // console.log("strPieceColorScore opponentColorScore",strPieceColorScore,opponentColorScore)
-        return strPieceColorScore - opponentColorScore;
+        return {strPieceColorScore:strPieceColorScore,opponentColorScore:opponentColorScore,relativeScore:strPieceColorScore - opponentColorScore};
     }
 
     //获得暗棋 及 数量  BLACK_0：2

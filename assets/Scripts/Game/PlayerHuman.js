@@ -94,7 +94,7 @@ cc.Class({
                 console.log("点击山界无效")
             }
             else{  //点击其他位置
-                this.board.pieceDownAction(this.nSelectedPieceIndex);
+                this.board.pieceDownBeforeMoveAction(this.nSelectedPieceIndex);
                 // 用户希望移动棋子
                 oneMove = new GameModel.gameModel.OneMove(this.nSelectedPieceIndex, nClickPieceIndex);
                 console.log(oneMove);

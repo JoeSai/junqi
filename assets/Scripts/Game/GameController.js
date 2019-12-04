@@ -1,17 +1,23 @@
 import GameModel from "./GameModel";
 import AI from "./AI";
+import Base from "../Base";
 cc.Class({
-    extends: cc.Component,
+    extends: Base,
 
     properties: {
         playerHuman: cc.Node,
         playerHuman2: cc.Node,
         boardNode: cc.Node,
+        myInfo:cc.Node,
+        opponentInfo:cc.Node,
+        layer:cc.Node
     },
 
     // LIFE-CYCLE CALLBACKS:
 
-    onLoad () {},
+    onLoad () {
+        window.GameController = this;
+    },
 
     start () {
 
@@ -51,11 +57,17 @@ cc.Class({
             this.nowTurn = 1;
             thisPlayer.beginMove(); // “我” 开始下棋
             console.log("玩家--1--开始下棋")
+
+            
+            this.showTurnPlayer(this.nowTurn);
         }
         else{
             this.nowTurn = 0;
             opponentPlayer.beginMove(); // “对手” 开始下棋
             console.log("玩家--2--开始下棋")
+
+            
+            this.showTurnPlayer(this.nowTurn);
         }
     },
     //在校验合法走棋之后
@@ -87,6 +99,18 @@ cc.Class({
 
         console.log( "玩家1颜色：",this.thisPieceColor,"玩家2颜色：", this.opponentPieceColor,"11111111111111111")
 
+        //界面 显示玩家执子颜色 
+        // 本方红色 对方黑色
+        if(this.thisPieceColor === GameModel.PLAYER_COLOR_RED){
+            this.myInfo.getChildByName("RED11").active = true;
+            this.opponentInfo.getChildByName("BLACK11").active = true;
+        }
+        // 本方黑色 对方红色
+        else{
+            this.myInfo.getChildByName("BLACK11").active = true;
+            this.opponentInfo.getChildByName("RED11").active = true;
+        }
+
         //设置双方颜色
         this.thisPlayer.setColor(this.thisPieceColor);
         this.opponentPlayer.setColor(this.opponentPieceColor);
@@ -97,33 +121,105 @@ cc.Class({
 
         setTimeout(() => {
             console.log("更换下棋者")
-            this.afterMove();
+            this.afterMove(this.nowTurn);
         }, 500);  //500
     },
     //一位玩家回合结束后  改变下棋者
-    afterMove(){  
+    afterMove(lastTurn){  
 
-        var isGameOver = GameModel.gameModel.isGameOver(this.thisPieceColor); //TODO:判断游戏结束
-
-        //游戏结束
-        if(isGameOver){
-            console.log("游戏结束")
+        let debug = false;
+ 
+        var gameOverLayer = this.layer.getChildByName("lay-gameover");
+        var result_info = gameOverLayer.getChildByName("result-info").getComponent(cc.Label);
+      
+        if(debug){
+            var isGameOver = GameModel.GameOver_State.Win;
             //TODO:判断输赢
+            if(isGameOver === GameModel.GameOver_State.Win)
+            {
+
+               
+                this.layerShow("lay-gameover");
+            }
+            
         }
 
-        //游戏继续
         else{
-            if(this.nowTurn == 1){
-                this.opponentPlayer.beginMove();
-                this.nowTurn = 0;
-                console.log("玩家--2")
+                //上一步为 本方下   
+            if(lastTurn === 1){
+                var isGameOver = GameModel.gameModel.isGameOver(this.thisPieceColor); 
+                // var isGameOver = GameModel.GameOver_State.Draw;
+
+                console.log("isGameOver",isGameOver)
+                //游戏结束
+                if(isGameOver !== GameModel.GameOver_State.Go){
+                    console.log("游戏结束",isGameOver)
+                    if(isGameOver === GameModel.GameOver_State.Win){
+                        result_info.string = "Congratulations! Yow win!"
+                    }
+                    else if(isGameOver === GameModel.GameOver_State.Lose){
+                        result_info.string = "Yow lose ..Keep trying!"
+                    }
+                    else{
+                        result_info.string = "Draw ..One more time!"
+                    }
+                    //显示结算窗口
+                    this.layerShow("lay-gameover");
+
+                
+                }
+                //游戏继续
+                else{
+                    this.opponentPlayer.beginMove();
+                    this.nowTurn = 0;
+                    console.log("玩家--2")
+                    this.showTurnPlayer(this.nowTurn);
+                }
             }
+            //上一步为 对方下
             else{
-                this.thisPlayer.beginMove();
-                this.nowTurn = 1;
-                console.log("玩家--1")
+                var isGameOver = GameModel.gameModel.isGameOver(this.opponentPieceColor); 
+
+                //游戏结束
+                if(isGameOver !== GameModel.GameOver_State.Go){
+                    console.log("游戏结束",isGameOver)
+                   //显示结算窗口
+                    if(isGameOver === GameModel.GameOver_State.Win){
+                        result_info.string = "Yow lose ..Keep trying!"
+                    }
+                    else if(isGameOver === GameModel.GameOver_State.Lose){
+                        result_info.string =  "Congratulations! Yow win!"
+                    }
+                    else{
+                        result_info.string = "draw ..One more time!"
+                    }
+                    this.layerShow("lay-gameover");
+                }
+                //游戏继续
+                else{
+                    this.thisPlayer.beginMove();
+                    this.nowTurn = 1;
+                    console.log("玩家--1");
+                    this.showTurnPlayer(this.nowTurn);
+                }
             }
+
         }
+        
+
        
+    },
+    //当前下棋的 玩家
+    showTurnPlayer(player){
+
+        if(player === 1){
+            this.myInfo.getChildByName("select").active = true;
+            this.opponentInfo.getChildByName("select").active = false;
+        }
+        else{
+            this.myInfo.getChildByName("select").active = false;
+            this.opponentInfo.getChildByName("select").active = true;
+        }
+        
     }
 });

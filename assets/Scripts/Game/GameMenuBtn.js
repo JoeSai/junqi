@@ -8,7 +8,7 @@
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
-var Base = cc.Class({
+cc.Class({
     extends: cc.Component,
 
     properties: {
@@ -31,47 +31,43 @@ var Base = cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad () {
+
+    
+        // var button = this.node.getComponent(cc.Button);
+        // var that = this;
+        // this.node.on(cc.Node.EventType.TOUCH_MOVE, function (event) {
+
+        //     button.interactable = false;  //移动过程中按钮禁用
+
+       
+        //     var moveXY = cc.v2;
+        //     var toXY = cc.v2;
+            
+        //     // moveXY.x = event.getDeltaX()       //获取鼠标距离上一次事件移动的 X轴距离。
+        //     moveXY.y = event.getDeltaY()      //获取鼠标距离上一次事件移动的 Y轴距离。
+       
+        //     toXY.x = that.node.position.x;
+        //     toXY.y = that.node.position.y + moveXY.y;
+
+        //     if(toXY.y > -600 && toXY.y <=0){
+        //         that.node.setPosition(toXY);
+        //     }
+        
+        //     // this.node.setPosition(this.node)
+        // })
+
+        // this.node.on(cc.Node.EventType.TOUCH_END, function (event) {
+           
+        //     button.interactable = true;  //按钮可用
+        // })
+        
+       
+    },
 
     start () {
 
     },
-    backToIndex(){
-        cc.director.loadScene("Index");
-    },
-    backToLevel(){
-        cc.director.loadScene("Level");
-    },
-    layerShow(openLayer){
-  
-        let layerFather = cc.find("Canvas/Layer");      //父节点
-        let layer = layerFather.getChildByName(openLayer);
 
-
-        layerFather.active = true;
-        layer.active = true;
-    },
-    layerClose(closeLayer){
-        let layerFather = cc.find("Canvas/Layer");      //父节点
-        let layer = layerFather.getChildByName(closeLayer);
-        layerFather.active = false;
-        layer.active = false;
-    },
-    openOrCloseMenuGroup(){
-        let menuGroup = cc.find("Canvas/MenuBtn/menuGroup");      //父节点
-        menuGroup.active = !menuGroup.active;
-
-    },
-    clickVolume(){
-        let layerFather = cc.find("Canvas/MenuBtn/menuGroup/menuGroup-icon/layout");      //父节点
-        let soundOn = layerFather.getChildByName("soundOn");
-        let soundOff = layerFather.getChildByName("soundOff");
-        
-        soundOn.active = ! soundOn.active;
-        soundOff.active = ! soundOff.active;
-        Animation.haveVolume = ! Animation.haveVolume;  //Animation 为 window 变量
-    }
     // update (dt) {},
 });
-
-export default Base;
