@@ -729,24 +729,24 @@ class GameModel {
             return GameOver_State.Win;
         }
 
-        console.log("明棋是否可移动？",this.isOnePlayerHasPossibleMove(strPieceColor),"暗棋是否有必要翻？",this.isOnePlayerHasCanMovePieces(strPieceColor))
+        // console.log("明棋是否可移动？",this.isOnePlayerHasPossibleMove(strPieceColor),"暗棋是否有必要翻？",this.isOnePlayerHasCanMovePieces(strPieceColor))
         //2.	对方无可移动的子、无暗棋可翻 ------win
         //3.	对方无可移动的子、有暗棋可翻 (但是暗棋中无对方可以移动的棋子) ------win
         //5. 最后一个可移动的棋子 与敌方棋子同归于尽，对方也没有可移动的棋子了--
         if(this.isOnePlayerHasPossibleMove(opponentColor) === false && this.isOnePlayerHasCanMovePieces(opponentColor) === false){
             if(this.isOnePlayerHasPossibleMove(strPieceColor) === false && this.isOnePlayerHasCanMovePieces(strPieceColor) === false){
-                console.log("555 双方 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
+                // console.log("555 双方 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
                 return GameOver_State.Draw;
             }
             else{
-                console.log(" 2233 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
+                // console.log(" 2233 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
                 return GameOver_State.Win;
             }
            
         }
         //4.（！本方！）最后一个可移动的棋子 与敌方棋子同归于尽 对方还有棋子（可移动)
         if(this.isOnePlayerHasPossibleMove(strPieceColor) === false && this.isOnePlayerHasCanMovePieces(strPieceColor) === false){
-            console.log(" 4 本方 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
+            // console.log(" 4 本方 无可移动的棋子、没有翻棋的必要（能移动的已经被吃光了）")
             return GameOver_State.Lose;
         }
       

@@ -201,44 +201,6 @@ class AI {
 
         console.log("hidePieces:",hidePieces)
 
-
-        // for(var i = 0; i < lstCurrentBoard.length; i++){
-        //     var oneGrid = lstCurrentBoard[i];
-        //     // 一个暗棋
-        //     if (oneGrid.nPieceId >= 0  && oneGrid.nShowHide === GameModel.PieceState.Hide) {
-        //         var nTotalValue = 0;
-
-        //         for (var key in hidePieces.dictHidePieces) {
-        //             var lstPieceColor_PieceId = key.split("_");  //RED_4   --->  ["RED", "4"]
-        //             var nCount = hidePieces.dictHidePieces[key];
-        //             if (bDebug) {
-        //                 console.log("lstPieceColor_PieceId =", lstPieceColor_PieceId, ", nCount =", nCount);
-        //             }
-
-        //             // clone当前gameModel
-        //             var anotherGameModel = gameModel.clone();
-                    
-        //             // 用该假设的棋子替换原棋子
-        //             // var orgGrid = oneGrid;
-        //             var pseudoGrid = new gameModel.OneGrid(GameModel.PieceState.Show, lstPieceColor_PieceId[0], lstPieceColor_PieceId[1]);
-        //             anotherGameModel.lstCurrentBoard[i] = pseudoGrid;
-
-        //             // 继续这个盘面走两步（对方一步，自己一步），但只走明子，不再翻暗子
-        
-        //             var depth = 2;
-        //             var alpha = Number.MAX_VALUE * (-1);
-        //             var beta = Number.MAX_VALUE ;
-        //             var valueMove = this.AlphaBeta(anotherGameModel, depth, alpha, beta, false);
-
-        //             nTotalValue += (valueMove.value * nCount);
-        //         }
-        //         // 该暗棋翻明的概率综合分
-        //         var averageValue = nTotalValue / hidePieces.nNumHidePieces;
-        //         console.log("averageValue:" , averageValue);
-
-        //     }
-        // }
-
         for(var i = 0; i < lstCurrentBoard.length; i++){
             var oneGrid = lstCurrentBoard[i];
             if (oneGrid.nPieceId >= 0  && oneGrid.nShowHide === GameModel.PieceState.Hide) {

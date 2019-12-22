@@ -16,7 +16,10 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        window.GameController = this;
+        window.GameController = this; //
+        if(!GameController.level){
+            GameController.level = 3;
+        }
     },
 
     start () {
@@ -31,7 +34,10 @@ cc.Class({
         //创建AI
         this.opponentPlayer = new AI();
         this.opponentPlayer.setController(this);
-        this.opponentPlayer.setOption({ depth: 2 })
+        
+        this.opponentPlayer.setOption({ depth: GameController.level });
+
+        console.log("ai depth：",GameController.level)
         
         // 本方棋子颜色和对方棋子颜色
         this.thisPieceColor = null;
@@ -156,14 +162,19 @@ cc.Class({
                     console.log("游戏结束",isGameOver)
                     if(isGameOver === GameModel.GameOver_State.Win){
                         result_info.string = "Congratulations! Yow win!"
+
                     }
                     else if(isGameOver === GameModel.GameOver_State.Lose){
                         result_info.string = "Yow lose ..Keep trying!"
+
+                    
                     }
                     else{
                         result_info.string = "Draw ..One more time!"
                     }
                     //显示结算窗口
+
+                    this.gameOverSum(1,isGameOver);
                     this.layerShow("lay-gameover");
 
                 
@@ -193,6 +204,7 @@ cc.Class({
                     else{
                         result_info.string = "draw ..One more time!"
                     }
+                    this.gameOverSum(0,isGameOver);
                     this.layerShow("lay-gameover");
                 }
                 //游戏继续
@@ -221,5 +233,43 @@ cc.Class({
             this.opponentInfo.getChildByName("select").active = true;
         }
         
+    },
+
+    //游戏结算 根据上一步下棋者 、对应的胜负判断  进行
+    gameOverSum(lastTurnPlayer,isGameOver){
+
+        //分数
+        var addScore = 2;
+        if(lastTurnPlayer !== 1){  //基于对方 的isGameOver 结算处理转换
+            addScore = -2;
+        }
+        
+        if(isGameOver === GameModel.GameOver_State.Win){
+            GameUserInfo.score = Number(GameUserInfo.score) + addScore;
+            
+        }
+        else if(isGameOver === GameModel.GameOver_State.Lose){
+            GameUserInfo.score = Number(GameUserInfo.score) - addScore;
+           
+        }
+        else{
+            //平局
+        }
+
+        //胜场
+        if((lastTurnPlayer === 1 && isGameOver === GameModel.GameOver_State.Win) ||(lastTurnPlayer === 0 && isGameOver === GameModel.GameOver_State.Lose)){
+            GameUserInfo.battlesWon = Number(GameUserInfo.battlesWon) + 1;
+        }
+
+        //总场
+        GameUserInfo.battlesAmount = Number(GameUserInfo.battlesAmount) + 1;
+
+        //TODO:金币
+
+        cc.sys.localStorage.setItem("GameUserInfo",JSON.stringify(GameUserInfo));
+    },
+
+    removeGameUserInfo(){
+        cc.sys.localStorage.removeItem("GameUserInfo");
     }
 });

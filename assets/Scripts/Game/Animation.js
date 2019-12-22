@@ -39,6 +39,7 @@ cc.Class({
     pieceUpAction(node,targetBoardXY){  //棋子node 和 棋子中心position
         node.runAction(cc.scaleTo(0.2, 1.7));
         this.playAudio("pieceUpAction");
+        this.select_icon.active = true;
         this.select_icon.setPosition(targetBoardXY);
     },
     pieceDownAction(node){
@@ -49,6 +50,7 @@ cc.Class({
         node.runAction(cc.scaleTo(0.2, 1.5));
     },
     pieceMoveAction(movingNode,fromBoardXY,targetBoardXY,nMovingType){
+        this.select_icon.active = true;
         this.select_icon.setPosition(fromBoardXY);
         movingNode.runAction(cc.moveTo(0.3, targetBoardXY))
         switch (nMovingType){
@@ -59,6 +61,7 @@ cc.Class({
                 this.playAudio("pieceMoveAction_KILL");
                 break;
             case GameModel.MOVING_TYPE.KILL_DIE:
+                this.select_icon.active = false;  //死亡选中框隐藏
                 this.playAudio("pieceMoveAction_KILL_DIE");
                 break;
         }
@@ -66,6 +69,7 @@ cc.Class({
     },
     hidePieceToShow(targetBoardXY){  //翻棋只播放音效
         this.playAudio("hidePieceToShow");
+        this.select_icon.active = true;
         this.select_icon.setPosition(targetBoardXY);
 
     },
@@ -82,10 +86,10 @@ cc.Class({
                     cc.audioEngine.play(this.audio_move, false, 1);
                     break
                 case "pieceMoveAction_KILL":
-                    cc.audioEngine.play(this.audio_move, false, 1);
+                    cc.audioEngine.play(this.audio_kill, false, 1);
                     break
                 case "pieceMoveAction_KILL_DIE":
-                    cc.audioEngine.play(this.audio_move, false, 1);
+                    cc.audioEngine.play(this.audio_kill_die, false, 1);
                     break
                 case "hidePieceToShow":
                     cc.audioEngine.play(this.audio_select, false, 1);

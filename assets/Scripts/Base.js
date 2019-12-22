@@ -70,6 +70,8 @@ var Base = cc.Class({
         soundOn.active = ! soundOn.active;
         soundOff.active = ! soundOff.active;
         Animation.haveVolume = ! Animation.haveVolume;  //Animation 为 window 变量
+
+        this.openOrCloseMenuGroup();
     }
     // update (dt) {},
 });
