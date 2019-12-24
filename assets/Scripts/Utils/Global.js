@@ -9,6 +9,7 @@ window.GameUserInfo = {
     score:'',   //分数
     battlesWon:'',  //胜利场次
     battlesAmount:'',    //总对局数
+    avatarUrl:''
 };
 
 

@@ -74,7 +74,7 @@ class AI {
             }
             //暗棋都翻完了
             else{
-                console.log("222222GameOver  AI  lose"); //TODO:
+                console.log("222222GameOver  AI  lose"); //TODO:界面UI
             }
            
         }  
@@ -83,6 +83,8 @@ class AI {
         else{
             //有暗棋可以翻时
             if(this.strategy_HideToShow(anotherGameModel)){
+                //采用 depth - 1的方法判断不行棋时候的评估分 ，需要改进： 当depth >=3 时，depth - 1 评估分很可能不受影响。
+                //TODO:解决导致出现不马上吃子的情况。
                 var opponent_valueWithMove = this.AlphaBeta(anotherGameModel,this.depth - 1,alpha,beta,false);
                 console.log("不行棋de分值 -------------------- ",opponent_valueWithMove.value)
 
@@ -234,7 +236,7 @@ class AI {
         
         if (depth === 0) {
             // console.log("evaluate() -----------------------")
-            return {value : this.evaluate(currentGameModel, this.strPieceColor), move : null};       //TODO:理解-----
+            return {value : this.evaluate(currentGameModel, this.strPieceColor), move : null};      
            // return 评价函数
         }
 

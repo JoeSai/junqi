@@ -8,7 +8,6 @@ export const insideVersion = "1.0.0";
 //游戏名称
 export const XCX_NAME = 'junqi';
 
-//更新记得更新当前版本号，统计有用
 export const XCX_VERSION = "1.0.0";
 
 export const VERSION_CODE = 1;
@@ -20,9 +19,11 @@ export const VERSION_CODE = 1;
  */
 export const PLATFORM_TYPE = {
     WEB_DESKTOP: "web_desktop",
+    WX : "wx",
 }
 
 /**
  * 当前平台
  */
-export const PLATFORM = PLATFORM_TYPE.WEB_DESKTOP;
+// export const PLATFORM = PLATFORM_TYPE.WEB_DESKTOP;
+export const PLATFORM = PLATFORM_TYPE.WX;

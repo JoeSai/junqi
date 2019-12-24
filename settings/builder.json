@@ -35,12 +35,12 @@
     "orientation": "portrait",
     "zip": false
   },
-  "startScene": "4150ff69-aad8-4264-84bc-73d6eee28b6b",
+  "startScene": "c2447756-64e0-4230-9cd5-28a68b106131",
   "title": "junqi",
   "webOrientation": "auto",
   "wechatgame": {
     "REMOTE_SERVER_ROOT": "",
-    "appid": "",
+    "appid": "wx7700319bc14dac66",
     "orientation": "portrait",
     "separate_engine": false,
     "subContext": ""

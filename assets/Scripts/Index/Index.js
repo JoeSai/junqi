@@ -17,7 +17,7 @@ cc.Class({
 
     onLoad () {
         
-        this.userName.string = "游客"+GameUserInfo.visitorId;
+        this.userName.string = GameUserInfo.name !== "" ?  GameUserInfo.name : "游客"+GameUserInfo.visitorId;
         this.userGold.string = GameUserInfo.gold;
         //TODO:更改前端信息。
 

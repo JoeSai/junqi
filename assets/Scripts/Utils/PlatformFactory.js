@@ -1,13 +1,19 @@
-import {PLATFORM, PLATFORM_TYPE} from "./Utils/Config";
+import {PLATFORM, PLATFORM_TYPE} from "./Config";
 
-import Web_Desktop_Api from "./Web_Desktop_Api";
-
+import WebDesktopApi from "./WebDesktopApi";
+import WxApi from "./WxApi";
 
 window.getPlatform = function(){
     // console.log("get")
   
-    if(PLATFORM === PLATFORM_TYPE.WEB_DESKTOP){
-        return new Web_Desktop_Api();
-    }
+        if(PLATFORM === PLATFORM_TYPE.WX){
+            return new WxApi();
+        }
+        // return new Web_Desktop_Api();
+        else if(PLATFORM === PLATFORM_TYPE.WEB_DESKTOP){
+            return new WebDesktopApi();
+            console.log("11111111112")
+        }
+        // return new Web_Desktop_Api();
 }
 
