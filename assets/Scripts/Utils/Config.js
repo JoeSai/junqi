@@ -26,4 +26,4 @@ export const PLATFORM_TYPE = {
  * 当前平台
  */
 // export const PLATFORM = PLATFORM_TYPE.WEB_DESKTOP;
-export const PLATFORM = PLATFORM_TYPE.WX;
+export const PLATFORM = PLATFORM_TYPE.WEB_DESKTOP;

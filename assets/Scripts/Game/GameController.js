@@ -18,7 +18,7 @@ cc.Class({
     onLoad () {
         window.GameController = this; //
         if(!GameController.level){
-            GameController.level = 3;
+            GameController.level = 2;
         }
     },
 

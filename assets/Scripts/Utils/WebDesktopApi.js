@@ -30,6 +30,8 @@ var WebDesktopApi = cc.Class({
         }
         else{
             // TODO:平台登录优先 , 平台登录失败再进行游客登录
+
+            // var isPlatformLoginSuccess = true;
         }
         var platformInfo = {
             "visitorId": visitorId,
@@ -61,9 +63,8 @@ var WebDesktopApi = cc.Class({
                     "battlesWon":0,
                     "battlesAmount":0
                 }
-                var isServerLoginSuccess = true;
         
-                typeof(callback) === "function" && callback(serverInfo,isServerLoginSuccess);
+                typeof(callback) === "function" && callback(serverInfo,false);
 
                 // typeof(callback) === "function" && callback(res,false);
                 // var res2 = JSON.parse(res);        //TODO: 改成后端直接回传json,前端不需要再这样字符串转json。

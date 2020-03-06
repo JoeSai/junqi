@@ -31,6 +31,7 @@ class AI {
             // if (bDebug_Move) {
             //     console.log("AI(", this.strPieceColor, ") move", oneMove,"--depth:",this.depth);   //移动打印
             // }
+            // console.log('11111111111111111111', this.gameController,'22222222222222222222', this.gameController.getComponent("GameController"))
             this.gameController.getComponent("GameController").playerMove(this.strPieceColor, oneMove);
         }, 200);
     }
@@ -120,64 +121,7 @@ class AI {
             }
 
 
-            // //当 行棋后 局面分不变时  
-            // console.log("valueWithMove.value",valueWithMove.value,"this.currentValue",this.currentValue)
-            // if(valueWithMove.value === this.currentValue){
-
-            //     //对手下
-            //     var opponent_valueWithMove = this.AlphaBeta(anotherGameModel,this.depth - 1,alpha,beta,false);
-            //     //若选择翻棋后 AI并不会吃亏
-            //     //解决 存在若不行棋 局面分下降的情况
-            //     if(opponent_valueWithMove.value === this.currentValue){
-            //          //50%概率 翻棋 50%概率随便移动
-            //         if(Math.random() >= 0.5){
-            //             console.log("222222局面分不变时，50%概率 翻棋");
-            //             return this.strategy_HideToShow(anotherGameModel);
-            //         }
-            //         else{
-            //             console.log("222222局面分不变时，50%概率随便移动");
-            //             var amountOfMoves = valueWithMove.lstMaxValueMove.length;
-            //             var randomIndex = Math.floor(Math.random() * amountOfMoves);
-            //             return valueWithMove.lstMaxValueMove[randomIndex];
-            //         }
-            //     }
-            //     else{
-            //         console.log("222222不吃亏，此时的最优下法");
-            //         var amountOfMoves = valueWithMove.lstMaxValueMove.length;
-            //         var randomIndex = Math.floor(Math.random() * amountOfMoves);
-            //         return valueWithMove.lstMaxValueMove[randomIndex];
-            //     }
-
-               
-            // }
-            // //行棋更有利
-            // else if(valueWithMove.value > this.currentValue){
-            //     console.log("222222行棋子有利，选择最优下法");
-            //     var amountOfMoves = valueWithMove.lstMaxValueMove.length;
-            //     var randomIndex = Math.floor(Math.random() * amountOfMoves);
-    
-            //     // console.log("randomMove index:",randomIndex)
-
-            //     this.currentValue = valueWithMove.value;  //重置局面分
-
-            //     return valueWithMove.lstMaxValueMove[randomIndex];
-            // }
-            // //行棋子更不利
-            // else{
-            //     //可以翻棋
-            //     if(this.strategy_HideToShow(anotherGameModel)){
-            //         console.log("222222行棋子更不利,翻棋");
-            //         return this.strategy_HideToShow(anotherGameModel);
-            //     }
-            //     //暗棋都翻完了
-            //     else{
-            //         var amountOfMoves = valueWithMove.lstMaxValueMove.length;
-            //         var randomIndex = Math.floor(Math.random() * amountOfMoves);
-            //         console.log("222222行棋子更不利,暗棋都翻完了,随便下");
-            //         this.currentValue = valueWithMove.value;  //重置局面分
-            //         return valueWithMove.lstMaxValueMove[randomIndex];
-            //     }
-            // }
+            
            
         }
         // console.log("asdasddddddddddddddadasd")
@@ -226,7 +170,7 @@ class AI {
     AlphaBeta(currentGameModel, depth, alpha, beta, isMax){
 
         //当前游戏胜负是否分出
-        // console.log("AI AlphaBeta depth",depth)
+        console.log("AI AlphaBeta depth",depth,isMax)
         var currentResult = currentGameModel.isGameOver(this.strPieceColor);
 
         //AI取胜
@@ -245,6 +189,8 @@ class AI {
             if(this.bDebug){
                 console.log("AI getOnePlayerPossibleMove")
             }
+
+            console.log("AI getOnePlayerPossibleMove",isMax)
           
             var lstShowPieceMove = currentGameModel.getOnePlayerPossibleMove(this.strPieceColor,true)
             
@@ -319,6 +265,7 @@ class AI {
                 console.log("AI的对方 getOnePlayerPossibleMove")
             }
             
+            console.log("AI getOnePlayerPossibleMove",isMax)
             var lstShowPieceMove = currentGameModel.getOnePlayerPossibleMove(GameModel.gameModel.getOpponentColor(this.strPieceColor));
 
             var value = Number.MAX_VALUE;

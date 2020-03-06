@@ -14,7 +14,7 @@ cc.Class({
         console.log(this.platform);
 
       
-
+       
         var that = this;
         // 平台登陆
         this.platform.loginPlatform(function(platformInfo,isPlatformLoginSuccess){
@@ -24,6 +24,7 @@ cc.Class({
             console.log("platformInfo",that.platformInfo)
             that._init();
         });
+    
 
     
         
@@ -53,7 +54,7 @@ cc.Class({
             // }
 
             
-            if(isServerLoginSuccess){  //登录成功且没有缓存 则进行缓存
+            if(isServerLoginSuccess){  //登录成功进行缓存
                 
                 cc.sys.localStorage.setItem("GameUserInfo",JSON.stringify(serverInfo));
                 console.log("服务器登录成功");
@@ -61,11 +62,12 @@ cc.Class({
             }
             else{
                 console.log("服务器登录失败");
+        
             }
             GameUserInfo = JSON.parse( cc.sys.localStorage.getItem("GameUserInfo") ); 
-            // console.log(JSON.stringify(GameUserInfo));
+            console.log(JSON.stringify(GameUserInfo));
             // console.log(GameUserInfo.visitorId);
-            cc.director.loadScene('Index');
+            cc.director.loadScene('Index');  //vconsole.min.js:11 loadScene: Failed to load scene 'Index' because 'Index' is already being loaded.  FIXME:
         })
             
         
