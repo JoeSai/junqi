@@ -1,6 +1,7 @@
 import GameModel from "./GameModel";
 import AI from "./AI";
 import Base from "../Base";
+import Api from "../Utils/Apis"
 cc.Class({
     extends: Base,
 
@@ -165,7 +166,7 @@ cc.Class({
 
                     }
                     else if(isGameOver === GameModel.GameOver_State.Lose){
-                        result_info.string = "Yow lose ..Keep trying!"
+                        result_info.string = "You lose ..Keep trying!"
 
                     
                     }
@@ -176,7 +177,7 @@ cc.Class({
 
                     this.gameOverSum(1,isGameOver);
                     this.layerShow("lay-gameover");
-
+                    this.gameOverApi();
                 
                 }
                 //游戏继续
@@ -196,7 +197,7 @@ cc.Class({
                     console.log("游戏结束",isGameOver)
                    //显示结算窗口
                     if(isGameOver === GameModel.GameOver_State.Win){
-                        result_info.string = "Yow lose ..Keep trying!"
+                        result_info.string = "You lose ..Keep trying!"
                     }
                     else if(isGameOver === GameModel.GameOver_State.Lose){
                         result_info.string =  "Congratulations! Yow win!"
@@ -206,6 +207,7 @@ cc.Class({
                     }
                     this.gameOverSum(0,isGameOver);
                     this.layerShow("lay-gameover");
+                    this.gameOverApi();
                 }
                 //游戏继续
                 else{
@@ -218,7 +220,7 @@ cc.Class({
 
         }
         
-
+        
        
     },
     //当前下棋的 玩家
@@ -271,5 +273,38 @@ cc.Class({
 
     removeGameUserInfo(){
         cc.sys.localStorage.removeItem("GameUserInfo");
+    },
+
+    playerGiveUp(){
+        var gameOverLayer = this.layer.getChildByName("lay-gameover");
+        var result_info = gameOverLayer.getChildByName("result-info").getComponent(cc.Label);
+        result_info.string = "You give up ..";
+        this.gameOverSum(0,GameModel.GameOver_State.Win); //对方获胜
+        this.layerShow("lay-gameover");
+        this.gameOverApi();
+    },
+
+    gameOverApi(){
+        Api.request({
+            url:"user/gameOver",
+            params:window.GameUserInfo,
+            succ:function(res){
+                console.log(JSON.stringify(res));
+                //连接服务器成功
+                //注册成功
+               
+                console.log(res)
+                
+               
+            },
+            fail:function(res){
+
+               
+                //TODO:失败提示
+                console.log(res)
+        
+                
+            }
+        });
     }
 });

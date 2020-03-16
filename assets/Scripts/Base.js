@@ -36,6 +36,18 @@ var Base = cc.Class({
     start () {
 
     },
+    showToast(msg) {
+        console.log('showToast: ' + msg);
+        if(typeof this.tipPrefab == 'undefined' || this.tipPrefab == null ) {
+            return;
+        }
+        var tipNode = cc.find("Canvas/TipNode");
+        if(tipNode == null) {
+            tipNode = cc.instantiate(this.tipPrefab);
+            tipNode.parent = cc.director.getScene().children[0];
+        }
+        tipNode.getComponent("tip").showTip(msg);
+    },
     backToIndex(){
         cc.director.loadScene("Index");
     },

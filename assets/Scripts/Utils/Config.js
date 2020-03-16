@@ -1,5 +1,5 @@
-
-export const serverUrl = "http://junqi.2enjoy.life/";   //服务器
+export const serverUrl = "http://junqiapi.2enjoy.life/";   //服务器
+// export const serverUrl = "http://junqi.2enjoy.life/";   //服务器
 export const version = 1;  
 export const whichSource = "junqi";  
 export const insideVersion = "1.0.0";  

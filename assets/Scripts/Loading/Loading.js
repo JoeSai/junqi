@@ -48,7 +48,25 @@ cc.Class({
 
             console.log(serverInfo,"serverInfo")
            
-            
+            /*  serverInfo 
+            {
+                "state": 1,
+                "msg": "visitorId更新完毕，返回用户数据成功",
+                "userInfo": {
+                    "gold": 5000,
+                    "score": 0,
+                    "battlesWon": 0,
+                    "battlesAmount": 0,
+                    "platform": "web",
+                    "_id": "5e6499a253fcd435c8251abf",
+                    "name": "2",
+                    "password": "1",
+                    "__v": 0,
+                    "visitorId": "lalala"
+                }
+            }
+             */
+
             // if(!storageGameUserInfo){  //FIXME:
             //     cc.sys.localStorage.setItem("GameUserInfo",JSON.stringify(serverInfo));
             // }
@@ -56,14 +74,17 @@ cc.Class({
             
             if(isServerLoginSuccess){  //登录成功进行缓存
                 
-                cc.sys.localStorage.setItem("GameUserInfo",JSON.stringify(serverInfo));
+                
                 console.log("服务器登录成功");
                 // console.log( cc.sys.localStorage.getItem("GameUserInfo") );
             }
             else{
                 console.log("服务器登录失败");
+                //TODO:
         
             }
+            cc.sys.localStorage.setItem("GameUserInfo",JSON.stringify(serverInfo.userInfo));
+            
             GameUserInfo = JSON.parse( cc.sys.localStorage.getItem("GameUserInfo") ); 
             console.log(JSON.stringify(GameUserInfo));
             // console.log(GameUserInfo.visitorId);

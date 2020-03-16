@@ -1,7 +1,7 @@
 import BasePlatformApi from "./BasePlatformApi";
 import Api from "./Apis";
 
-var Web_Desktop_Api = cc.Class({
+var WxApi = cc.Class({
     extends: BasePlatformApi,
 
     properties: {
@@ -148,4 +148,4 @@ var Web_Desktop_Api = cc.Class({
     
     // update (dt) {},
 });
-export default Web_Desktop_Api;
+export default WxApi;

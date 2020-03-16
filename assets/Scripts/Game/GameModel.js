@@ -81,8 +81,8 @@ const   PLAYER_COLOR_RED = "RED",
         midRailway3 = [35,36,37,38,39],
         midRailway4 = [55,56,57,58,59],
 
-        //.concat(不去重) TODO:优化
-        allRailway = leftRailway.concat(rightRailway).concat(midRailway1).concat(midRailway2).concat(midRailway3).concat(midRailway4),
+        //clearRepeat()  数组去重 
+        allRailway = Util.clearRepeat(leftRailway.concat(rightRailway).concat(midRailway1).concat(midRailway2).concat(midRailway3).concat(midRailway4)),
 
         //行棋step对象
         Piece_step = {
@@ -155,6 +155,8 @@ const   PLAYER_COLOR_RED = "RED",
 
         }
 //----------A star -----------
+
+var isUserAStar = true;
         //可能要走的路线
 var	openArr = [];
 		//已经关闭的路线
@@ -448,7 +450,7 @@ class GameModel {
 
 //map 1为起点 2为障碍 3为终点
 
-    engineerAStar(nFromIndex,nToIndex){
+    engineerAStar(nFromIndex,nToIndex){  //TODO:优化
         
         var that = this;
         console.log('起点',nFromIndex,'终点',nToIndex)
@@ -596,51 +598,61 @@ class GameModel {
 		//创建一个结果数组 把查找到的结果放到这个数组中
 		var result = [];
 		//循环所有的li节点 进行查找
-		for(var i=0;i<this.getCurrentBoard().length;i++){
-			//如果经过过滤 返回的是true 表示 这个节点不是障碍物 那么需要添加到result结果数组中
-			if(this.filter(i)){
+		// for(var i=0;i<this.getCurrentBoard().length;i++){
+		// 	//如果经过过滤 返回的是true 表示 这个节点不是障碍物 那么需要添加到result结果数组中
+		// 	if(this.filter(i)){
                 
-                result.push(new Number(i));
+        //         result.push(new Number(i));
+        //     }
+        //     console.log('result-------------------',result)
+        // }
+        
+        for(var i=0;i<allRailway.length;i++){    //对全体轨道点  进行  过滤 =>result数组
+            //如果经过过滤 返回的是true 表示 这个节点不是障碍物 那么需要添加到result结果数组中
+            var railwayNode = allRailway[i];
+			if(this.filter(railwayNode)){
+                
+                result.push(new Number(railwayNode));
             }
-            console.log('result-------------------',result)
+            // console.log('result-------------------',result)
 		}
 		//接下来需要在没有障碍物的结果中去找 和 当前节点相邻的节点
         //判断条件是 他们的横纵坐标的差值需要小于 等于 网格大小
         var nodeLiY = this.gridIndexToGridXY(Number(nodeLi)).y;
         var nodeLiX = this.gridIndexToGridXY(Number(nodeLi)).x;
 
-        console.log('findli',result,nodeLiY,nodeLiX,nodeLi)
+        // console.log('findli',result,nodeLiY,nodeLiX,nodeLi)
 		for(var i=0;i<result.length;i++){
 
             var iY = this.gridIndexToGridXY(Number(result[i])).y;
             var iX = this.gridIndexToGridXY(Number(result[i])).x;
 
-            console.log("ix iy ",iX,iY)
+            // console.log("ix iy ",iX,iY)
 
             if(Number(nodeLi)>= 25 && Number(nodeLi) <= 39)  //在中间两条铁路  考虑山界因素
             {
-                console.log('山界盘轨道')
-                if(((nodeLiX === iX) && (Math.abs(nodeLiY - iY) === 2) && (nodeLiX !== 1) && (nodeLiX !== 3)) || Math.sqrt((nodeLiX-iX)*(nodeLiX-iX)+(nodeLiY-iY)*(nodeLiY-iY)) < 2){
+                // console.log('山界盘轨道')
+                if( Math.sqrt((nodeLiX-iX)*(nodeLiX-iX)+(nodeLiY-iY)*(nodeLiY-iY)) < 2 || ((nodeLiX === iX) && (Math.abs(nodeLiY - iY) === 2) && (nodeLiX !== 1) && (nodeLiX !== 3)) ){
                     //这里的result[i]就是当前目标点相邻的节点  把这些节点传入到估价函数就能得到他们的估值，并且要把这些估值挂载到他们自身的一个自定义属性上
                     result[i].num = this.fn(Number(result[i]));         //FIXME:
                     result[i].parent = nodeLi;
                     //nodeLi 是当前的位置  result[i] 是当前位置相邻的点  下一次要走的位置就在这几个点中，所以给result[i]定义一个parent属性
                     //来存上一次的路径 ，最终把这些路径联系起来就是完整的路径
                     openArr.push(result[i]);
-                    console.log('parent test',result[i],result[i].parent)
-                    console.log('findli pushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+                    // console.log('parent test',result[i],result[i].parent)
+                    // console.log('findli pushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
                 }
             }
             else{
-                if(Math.sqrt((nodeLiX-iX)*(nodeLiX-iX)+(nodeLiY-iY)*(nodeLiY-iY)) < 2){
+                if(((nodeLiX-iX)*(nodeLiX-iX)+(nodeLiY-iY)*(nodeLiY-iY)) == 1){  //1²+0²
                     //这里的result[i]就是当前目标点相邻的节点  把这些节点传入到估价函数就能得到他们的估值，并且要把这些估值挂载到他们自身的一个自定义属性上
                     result[i].num = this.fn(Number(result[i]));         //FIXME:
                     result[i].parent = nodeLi;
                     //nodeLi 是当前的位置  result[i] 是当前位置相邻的点  下一次要走的位置就在这几个点中，所以给result[i]定义一个parent属性
                     //来存上一次的路径 ，最终把这些路径联系起来就是完整的路径
                     openArr.push(result[i]);
-                    console.log('parent test',result[i],result[i].parent)
-                    console.log('findli pushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+                    // console.log('parent test',result[i],result[i].parent)
+                    // console.log('findli pushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
                 }
             }
             
@@ -730,19 +742,23 @@ class GameModel {
 
         var fromGird = this.getOneGrid(oneMove.nFromIndex);
         
-        //工兵 A star ：初始位置和移动目的地都在铁路上
-        if(oneMove.nFromIndex != null && oneMove.nToIndex != null && Pieces[fromGird.nPieceId].name === '工兵' && (Util.inArray(oneMove.nFromIndex,allRailway) != -1) && (Util.inArray(oneMove.nToIndex,allRailway) != -1)){
+        //工兵 A star ：初始位置和移动目的地都在铁路上 开关
 
-            if(oneMove.nToIndex !== oneMove.nFromIndex){
-                console.log('工兵 a星') //TODO:3.3 
-                return this.engineerAStar(oneMove.nFromIndex,oneMove.nToIndex);
-                
-            }
-            else{
-                return false;
-            }
-        }   
+        if(isUserAStar){
+            if(oneMove.nFromIndex != null && oneMove.nToIndex != null && Pieces[fromGird.nPieceId].name === '工兵' && (Util.inArray(oneMove.nFromIndex,allRailway) != -1) && (Util.inArray(oneMove.nToIndex,allRailway) != -1)){
 
+                if(oneMove.nToIndex !== oneMove.nFromIndex){
+                    console.log('工兵 a星') //TODO:3.3 
+                    return this.engineerAStar(oneMove.nFromIndex,oneMove.nToIndex);
+                    
+                }
+                else{
+                    return false;
+                }
+            }   
+    
+        }
+        
         //一个明棋 移动到另一个位置 （可能存在其他棋子）
         //1.判断是否可移动到  2.判断是否为
         if(oneMove.nFromIndex != null && oneMove.nToIndex != null)
@@ -1112,8 +1128,9 @@ class GameModel {
         }
         // 明棋只能移动
         else if(Pieces[oneGrid.nPieceId].name === "工兵" && (Util.inArray(nGridIndex,allRailway) != -1)){  //工兵 且在铁道上
-            for (let i = 0; i < allRailway.length; i++) {
-                var nToIndex = allRailway[i];
+            var allRailwayAndOther = Util.clearRepeat(allRailway.concat(Piece_step[nGridIndex]));  //全部铁道 + 可到达的非铁道
+            for (let i = 0; i < allRailwayAndOther.length; i++) {
+                var nToIndex = allRailwayAndOther[i];  //全部铁道 + 可到达的非铁道
                 var oneMove = new this.OneMove(nGridIndex,nToIndex);
                 // lstPossibleMoves.push(oneMove);   //FIXME: del 校验move合法则 push  
                 if(this.verifyMove(oneMove)){
@@ -1189,8 +1206,10 @@ class GameModel {
         }
         // 明棋只能移动
         else if(Pieces[oneGrid.nPieceId].name === "工兵" && (Util.inArray(nGridIndex,allRailway) != -1)){  //工兵 且在铁道上
-            for (let i = 0; i < allRailway.length; i++) {
-                var nToIndex = allRailway[i];
+            var allRailwayAndOther = Util.clearRepeat(allRailway.concat(Piece_step[nGridIndex]));  //全部铁道 + 可到达的非铁道
+            console.log("allRailwayAndOther",allRailwayAndOther)
+            for (let i = 0; i < allRailwayAndOther.length; i++) {
+                var nToIndex = allRailwayAndOther[i];  //全部铁道 + 可到达的非铁道
                 var oneMove = new this.OneMove(nGridIndex,nToIndex);
                 // lstPossibleMoves.push(oneMove);   //FIXME: del 校验move合法则 push  
                 if(this.verifyMove(oneMove)){

@@ -34,6 +34,7 @@ var WebDesktopApi = cc.Class({
             // var isPlatformLoginSuccess = true;
         }
         var platformInfo = {
+            "name":window.GameUserInfo.name,  
             "visitorId": visitorId,
             "isVisitorLogin":isVisitorLogin
         }
@@ -48,7 +49,7 @@ var WebDesktopApi = cc.Class({
     loginServer(platformInfo,callback){
         
         Api.request({
-            url:"login.php",
+            url:"user/getUserInfo",
             params:platformInfo,
             succ:function(res){
                 // console.log(JSON.stringify(res));
@@ -57,11 +58,13 @@ var WebDesktopApi = cc.Class({
             fail:function(res){
 
                 var serverInfo ={
-                    "name":"游客",
-                    "gold":5000,
-                    "score":0,
-                    "battlesWon":0,
-                    "battlesAmount":0
+                    userInfo:{
+                        "name":"游客",
+                        "gold":5000,
+                        "score":0,
+                        "battlesWon":0,
+                        "battlesAmount":0
+                    }
                 }
         
                 typeof(callback) === "function" && callback(serverInfo,false);
