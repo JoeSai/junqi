@@ -1,3 +1,4 @@
+import Api from "../Utils/Apis";
 import Base from "../Base";
 
 cc.Class({
@@ -11,6 +12,9 @@ cc.Class({
 
         infoLayout:cc.Node,
         Layer : cc.Node,
+
+        rankItemPrefab: cc.Prefab,
+        rankList: cc.Node,    //排名列表
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -47,6 +51,37 @@ cc.Class({
     closeLayer(target,closeLayer){
         this.layerClose(closeLayer);
     },
+    getRank(){
+        this.openLayer(null,'lay-rank');
+        var that = this;
+        Api.request({
+            url:"user/getRank",
+            
+            succ:function(res){
+                // console.log(JSON.stringify(res));
+                
+                window.GameAppInfo.rank = res.rankInfo;  
+                console.log(" window.GameAppInfo.rank", window.GameAppInfo.rank)
+                console.log(" window.GameAppInfo.rank", window.GameAppInfo.rank[0])
+                for(var i=0; i<5; i++) {
+                    var node = cc.instantiate(that.rankItemPrefab);
+                    that.rankList.addChild(node);
+                    node.getComponent("RankItem").setData(i, window.GameAppInfo.rank[i]);
+                }
+                
+               
+            },
+            fail:function(res){
 
+                that.showToast("获取排行榜失败," + res.msg)
+                //TODO:失败提示
+                console.log('获取排行榜失败')
+        
+                
+            }
+        });
+
+        
+    }
     // update (dt) {},
 });

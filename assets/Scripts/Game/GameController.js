@@ -21,6 +21,7 @@ cc.Class({
         if(!GameController.level){
             GameController.level = 2;
         }
+      
     },
 
     start () {
@@ -48,6 +49,7 @@ cc.Class({
         this.nowTurn = 0;
 
         GameModel.gameModel.init();    //棋子初始化
+        // GameModel.gameModel.initForTest(); //测试
 
         var coin = GameModel.gameModel.flipCoin();
 

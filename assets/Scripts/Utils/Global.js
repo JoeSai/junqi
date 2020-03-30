@@ -16,3 +16,7 @@ window.GameUserInfo = {
 window.GameController = {
     level:'',
 }
+
+window.GameAppInfo = {
+    
+}

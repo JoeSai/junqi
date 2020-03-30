@@ -10,7 +10,7 @@ let Apis = {
             url: options.url,
             params: JSON.stringify(Object.assign(Xhr.getCommonParams(), options.params)), //传输的 参数 转换成json格式
             succ: function(res) {
-                console.log(res,"api------------dddddddddd")
+                // console.log(res,"api------------dddddddddd")
                 var res = JSON.parse(res);   //FIXME:12.13 接收数据直接转json
                 if (res.state === 1) {
                     typeof options.succ === "function" && options.succ(res);

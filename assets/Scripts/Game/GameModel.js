@@ -168,6 +168,8 @@ var	map = [
 var resultParent = [];
 var endLi;
 var beginLi;
+
+var AStarTime = 0;
         
 
 //-注意上面格式，极其容易出错--//
@@ -320,7 +322,7 @@ class GameModel {
 
     init() {
         this.lstCurrentBoard = [];
-
+        window.lstCurrentBoard =  this.lstCurrentBoard;
         //玩家颜色
         var PLAYER_COLORS = [];
         PLAYER_COLORS.push(PLAYER_COLOR_RED);
@@ -375,6 +377,60 @@ class GameModel {
         }
         console.log("GameModel, this.lstCurrentBoard =", this.lstCurrentBoard);  
       
+    }
+
+
+
+    //测试算法用
+    initForTest() {
+        this.lstCurrentBoard = [];
+
+        //玩家颜色
+        var PLAYER_COLORS = [];
+        PLAYER_COLORS.push(PLAYER_COLOR_RED);
+        PLAYER_COLORS.push(PLAYER_COLOR_BLACK);
+
+
+        var nullGrid = new this.OneGrid(null,null,NULL_PIECE);
+        var bFlag = new this.OneGrid(PieceState.Hide, PLAYER_COLOR_BLACK,11);
+        var rFlag = new this.OneGrid(PieceState.Hide, PLAYER_COLOR_RED,11);
+        var bEng = new this.OneGrid(PieceState.Hide, PLAYER_COLOR_BLACK,9);
+        var rEng = new this.OneGrid(PieceState.Hide, PLAYER_COLOR_RED,9);
+
+        var bEng = new this.OneGrid(PieceState.Show, PLAYER_COLOR_RED,0);
+        var rEng = new this.OneGrid(PieceState.Show, PLAYER_COLOR_BLACK,5);
+        //生成棋子
+     
+        
+        for(var i = 0;i < 50;i++){
+            this.lstCurrentBoard.push(bFlag);
+        }
+        this.lstCurrentBoard[0] = bEng;
+        this.lstCurrentBoard[5] = rEng;
+        // this.lstCurrentBoard[6] = nullGrid;
+        // this.lstCurrentBoard[7] = nullGrid;
+        // this.lstCurrentBoard[8] = nullGrid;
+        for(var i = 0; i < Filed.length/2; i++)
+        {
+            var filed = Filed[i];
+            console.log("filed xxxxxxxxxxxxxxxxxx",filed)
+            this.lstCurrentBoard.splice(filed, 0, nullGrid);
+        }
+
+         //在棋盘 "前线 && 山界"位置 加入 空棋子 id -2
+        nullGrid = new this.OneGrid(null,null,MOUNTAIN);
+         for(var i = 0; i < 5; i++)
+         {
+             this.lstCurrentBoard.splice(30, 0, nullGrid);
+         }
+        
+        nullGrid = new this.OneGrid(null,null,NULL_PIECE);
+        for(var i = Filed.length/2; i < Filed.length; i++)
+        {
+            var filed = Filed[i];
+            console.log("filed xxxxxxxxxxxxxxxxxx",filed)
+            this.lstCurrentBoard.splice(filed, 0, nullGrid);
+        }
     }
 /*
 * Math.random()  [0，1)
@@ -454,6 +510,7 @@ class GameModel {
         
         var that = this;
         console.log('起点',nFromIndex,'终点',nToIndex)
+        console.log('op',openArr)
 
         //先判断地图是否生成成功， =>终点是否可以kill ，再判断是否存在通路。
         this.createMap(nFromIndex,nToIndex,function(status){
@@ -477,6 +534,7 @@ class GameModel {
 
     createMap(nFromIndex,nToIndex,callback){
       
+        
         //重置
         map = [];
         // number 对象
@@ -517,6 +575,7 @@ class GameModel {
             endLi = new Number(nToIndex);
             console.log('begin li ------------',beginLi)
             // openArr.push(beginLi);
+            console.log('op before push',openArr,'nFromIndex',nFromIndex);
             openArr.push(new Number(nFromIndex));
 
             console.log(map,map[nToIndex]);
@@ -535,7 +594,8 @@ class GameModel {
     openFn(){
     	//nodeLi 表示 当前open队列中的元素  也就是说 先去除第一个起始节点
         //shift 方法的作用： 把数组中的第一个元素删除，并且返回这个被删除的元素
-        console.log('zzzzzzzzzzzzz',openArr.length,openArr)
+        AStarTime++;
+        console.log('主循环次数',AStarTime,'zzzzzzzzzzzzz',openArr.length,openArr)
 		if(openArr.length == 0){
 			console.log('空——---------------')
           
@@ -547,7 +607,9 @@ class GameModel {
 		if(Number(nodeLi) == Number(endLi)){
             console.log('找到终点了88888888888888')
             console.log('找到路径888888888888',this.showPath());
-            
+           
+            //重新设置openArr 使得计算次数从2290 -> 1169 !!!!!!!!!!!!!!!!!!!!!!
+            openArr = [];   
            
             return;
         }
@@ -629,7 +691,7 @@ class GameModel {
 
             // console.log("ix iy ",iX,iY)
 
-            if(Number(nodeLi)>= 25 && Number(nodeLi) <= 39)  //在中间两条铁路  考虑山界因素
+            if(Number(nodeLi)>= 25 && Number(nodeLi) <= 39 && Number(result[i])>=25 && Number(result[i])<=39)  //在中间两条铁路  考虑山界因素
             {
                 // console.log('山界盘轨道')
                 if( Math.sqrt((nodeLiX-iX)*(nodeLiX-iX)+(nodeLiY-iY)*(nodeLiY-iY)) < 2 || ((nodeLiX === iX) && (Math.abs(nodeLiY - iY) === 2) && (nodeLiX !== 1) && (nodeLiX !== 3)) ){
