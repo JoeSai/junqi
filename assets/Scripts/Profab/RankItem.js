@@ -18,7 +18,7 @@ cc.Class({
        
         // this.numNode.node.active = true
         this.numNode.string = index + 1;
-        
+        console.log("info",info)
         this.nameLabel.string = info.name;
         this.scoreLabel.string = info.score;
 

@@ -166,10 +166,10 @@ class AI {
 
     }
     //Alpha-Beta搜索  
-    //当前局面 + 搜索深度 + alpha + beta + 是否是最大者
+    //当前局面 + 搜索深度 + alpha + beta + 是否是最大者(下棋方)
     AlphaBeta(currentGameModel, depth, alpha, beta, isMax){
 
-        //当前游戏胜负是否分出
+        //@@1.1当前游戏胜负是否分出
         console.log("AI AlphaBeta depth",depth,isMax)
         var currentResult = currentGameModel.isGameOver(this.strPieceColor);
 
@@ -177,7 +177,7 @@ class AI {
         if(currentResult === GameModel.GameOver_State.Win){
             return {value : 10000, move : null}
         }
-        
+        //@@1.2
         if (depth === 0) {
             // console.log("evaluate() -----------------------")
             return {value : this.evaluate(currentGameModel, this.strPieceColor), move : null};      
@@ -192,6 +192,7 @@ class AI {
 
             console.log("AI getOnePlayerPossibleMove",isMax)
           
+            //@@2.1
             var lstShowPieceMove = currentGameModel.getOnePlayerPossibleMove(this.strPieceColor,true)
             
             if(this.bDebug){
@@ -218,7 +219,7 @@ class AI {
                 }
                 return {value : value , move : move}  //FIXME:
             }
-
+            //@@2.2
             for(var i = 0; i < lstShowPieceMove.length; i++){
                 var currentMove = lstShowPieceMove[i];
 
@@ -226,7 +227,7 @@ class AI {
                     console.log("AI currentMove:",currentMove);
                 }
 
-                //移动棋子
+                //移动棋子 在克隆棋盘后进行递归走棋
                 var cloneGameModel = currentGameModel.clone();
                 cloneGameModel.playerMove(currentMove);
 
@@ -321,6 +322,8 @@ class AI {
         }
 
     }
+
+    //局面评估
     evaluate(gameModel, strPieceColor) {
         
     

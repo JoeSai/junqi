@@ -2,6 +2,7 @@
   "android-instant": {
     "REMOTE_SERVER_ROOT": "",
     "host": "",
+    "packageName": "org.cocos2d.junqi",
     "pathPattern": "",
     "recordPath": "",
     "scheme": "https",
@@ -46,5 +47,15 @@
     "subContext": ""
   },
   "xxteaKey": "d2c48cd3-b987-47",
-  "zipCompressJs": true
+  "zipCompressJs": true,
+  "android": {
+    "packageName": "org.cocos2d.junqi"
+  },
+  "ios": {
+    "packageName": "org.cocos2d.junqi"
+  },
+  "mac": {
+    "packageName": "org.cocos2d.junqi"
+  },
+  "win32": {}
 }

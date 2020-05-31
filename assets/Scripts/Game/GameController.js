@@ -293,7 +293,7 @@ cc.Class({
             succ:function(res){
                 console.log(JSON.stringify(res));
                 //连接服务器成功
-                //注册成功
+                //更新数据
                
                 console.log(res)
                 

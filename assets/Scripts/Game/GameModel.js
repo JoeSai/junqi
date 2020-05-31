@@ -354,7 +354,7 @@ class GameModel {
         //在棋盘 行营位置 加入 空棋子 id -1
         var nullGrid = new this.OneGrid(null,null,NULL_PIECE);
         // console.log("nullGrid = :",nullGrid);
-        for(var i = 0; i < Filed.length/2; i++)
+        for(var i = 0; i < Filed.length/2; i++) //0-4 下方行营
         {
             var filed = Filed[i];
             console.log("filed xxxxxxxxxxxxxxxxxx",filed)
@@ -369,7 +369,7 @@ class GameModel {
          }
         
         nullGrid = new this.OneGrid(null,null,NULL_PIECE);
-        for(var i = Filed.length/2; i < Filed.length; i++)
+        for(var i = Filed.length/2; i < Filed.length; i++)  //5-9 上方行营
         {
             var filed = Filed[i];
             console.log("filed xxxxxxxxxxxxxxxxxx",filed)
@@ -397,16 +397,19 @@ class GameModel {
         var bEng = new this.OneGrid(PieceState.Hide, PLAYER_COLOR_BLACK,9);
         var rEng = new this.OneGrid(PieceState.Hide, PLAYER_COLOR_RED,9);
 
-        var bEng = new this.OneGrid(PieceState.Show, PLAYER_COLOR_RED,0);
-        var rEng = new this.OneGrid(PieceState.Show, PLAYER_COLOR_BLACK,5);
+        // var bEng = new this.OneGrid(PieceState.Show, PLAYER_COLOR_RED,0);
+        // var rEng = new this.OneGrid(PieceState.Show, PLAYER_COLOR_BLACK,5);
         //生成棋子
      
         
         for(var i = 0;i < 50;i++){
-            this.lstCurrentBoard.push(bFlag);
+            this.lstCurrentBoard.push(nullGrid);
         }
-        this.lstCurrentBoard[0] = bEng;
-        this.lstCurrentBoard[5] = rEng;
+        this.lstCurrentBoard[5] = bEng;
+        this.lstCurrentBoard[6] = bFlag
+       
+        ;
+        // this.lstCurrentBoard[5] = rEng;
         // this.lstCurrentBoard[6] = nullGrid;
         // this.lstCurrentBoard[7] = nullGrid;
         // this.lstCurrentBoard[8] = nullGrid;
@@ -431,6 +434,9 @@ class GameModel {
             console.log("filed xxxxxxxxxxxxxxxxxx",filed)
             this.lstCurrentBoard.splice(filed, 0, nullGrid);
         }
+
+        this.lstCurrentBoard[59] = rEng;
+        this.lstCurrentBoard[58] = rFlag
     }
 /*
 * Math.random()  [0，1)
@@ -516,7 +522,7 @@ class GameModel {
         this.createMap(nFromIndex,nToIndex,function(status){
         
             if(status){    
-                console.log('8888888888888888888888888888888',that.openFn(nFromIndex,nToIndex))
+                // console.log('8888888888888888888888888888888',that.openFn(nFromIndex,nToIndex))
                 that.openFn(nFromIndex,nToIndex)                   
             }
             else{

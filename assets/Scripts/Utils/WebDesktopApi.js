@@ -59,11 +59,12 @@ var WebDesktopApi = cc.Class({
 
                 var serverInfo ={
                     userInfo:{
-                        "name":"游客",
+                        "name":"",
                         "gold":5000,
                         "score":0,
                         "battlesWon":0,
-                        "battlesAmount":0
+                        "battlesAmount":0,
+                        "visitorId":platformInfo.visitorId
                     }
                 }
         

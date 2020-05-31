@@ -186,7 +186,7 @@ cc.Class({
         // console.log("Board, ix =", ix, ", iy =", iy);
 
         // 期望 ix 为 0 1 2 3 4 
-        // 会出现 Board, ix = 5 , iy = 1 ,可能为cocos bug
+        // 会出现 Board, ix = 5 , iy = 1 
         if(ix >= GameModel.Board.Width){
             ix = GameModel.Board.Width - 1;
         }
